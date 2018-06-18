@@ -163,9 +163,14 @@ ggplot(d, aes(x=ozone)) +
   geom_vline(xintercept = d[, mean(ozone)], colour='red') +
   geom_vline(xintercept = d[, median(ozone)], colour='blue')
 
-## TODO: pick up here
 ## This seems like a fine time to begin examing "spread"
 ## Add sample variance, standard deviation, and range to the plot
+ozone_mean<- d[, mean(ozone)]
+ozone_median <- d[, median(ozone)]
+ozone_var <- d[, var(ozone)]
+ozone_sd <- d[, sd(ozone)]
+ozone_range <- d[, diff(range(ozone))]
+
 b <- seq(0,12,by=1.0)
 ggplot(d, aes(x=ozone)) +
   geom_histogram(
@@ -175,31 +180,30 @@ ggplot(d, aes(x=ozone)) +
     fill='white') +
   geom_density(colour='black', size=1.25) +
   theme(aspect.ratio = 1) +
-  geom_vline(xintercept = d[, mean(ozone)], colour='red') +
-  geom_vline(xintercept = d[, median(ozone)], colour='blue') +
-  geom_segment()
+  geom_vline(xintercept = ozone_mean, colour='black') +
+  geom_segment(
+    aes(x=ozone_mean, xend=ozone_mean+ozone_var, y=.3, yend=.3),
+    colour='red') +
+  geom_segment(
+    aes(x=ozone_mean, xend=ozone_mean-ozone_var, y=.3, yend=.3),
+    colour='red') +
+  geom_segment(
+    aes(x=ozone_mean, xend=ozone_mean+ozone_sd, y=.35, yend=.35),
+    colour='blue') +
+  geom_segment(
+    aes(x=ozone_mean, xend=ozone_mean-ozone_sd, y=.35, yend=.35),
+    colour='blue') +
+  geom_segment(
+    aes(x=ozone_mean, xend=ozone_mean+ozone_range, y=.4, yend=.4),
+    colour='green') +
+  geom_segment(
+    aes(x=ozone_mean, xend=ozone_mean-ozone_range, y=.4, yend=.4),
+    colour='green')
 
-## # below, score_hw_x, is a place holder for your score on homework x
-## scores_hw <- c(
-##   score_hw_1,
-##   score_hw_2,
-##   score_hw_3,
-##   score_hw_4,
-##   score_hw_5,
-##   score_hw_6,
-##   score_hw_7,
-##   score_hw_8
-## )
-
-## cumulative_score_hw <- sum(hw_scores)
-## score_project <- x # x is a placeholder for your score
-
-## mean(c(scores_hw, score_project))
 
 
 ## NOTE: Example 4
 ## The UCBAdmissions comes built in with R.
-## https://www.rdocumentation.org/packages/datasets/versions/3.5.0
 ## This data set is frequently used for illustrating Simpson's paradox, see
 ## Bickel et al (1975). At issue is whether the data show evidence of sex bias
 ## in admission practices. There were 2691 male applicants, of whom 1198 (44.5%)
@@ -212,37 +216,30 @@ ggplot(d, aes(x=ozone)) +
 ## departments with higher rejection rates).
 d <- as.data.table(UCBAdmissions)
 
-## Play with a bunch of different ways to inspect if there is a gender
-## difference
+## One interesting question might be: Is there a gender difference in this data?
 
+## Lets examine the bumber of males and females accepted and rejected to each department separately
 ggplot(d, aes(x=Gender, y=N)) +
   geom_bar(stat='identity') +
   facet_wrap(~Admit*Dept, ncol=6) +
   theme(aspect.ratio=1)
 
+## The last plot may have been a bit much to look at, so lets try to condense
+## by collapsing all departments into one
 dd <- d[, sum(N), .(Gender, Admit)]
 ggplot(dd, aes(x=Gender, y=V1)) +
   geom_bar(stat='identity') +
   facet_wrap(~Admit) +
   theme(aspect.ratio=1)
 
-dd <- d[, N[Admit=='Admitted']/N[Admit=='Rejected'], .(Gender, Dept)]
+dd <- d[, (N[Admit=='Admitted'] - N[Admit=='Rejected']) /
+          (N[Admit=='Admitted'] + N[Admit=='Rejected']),
+        .(Gender, Dept)]
 ggplot(dd, aes(x=Gender, y=V1)) +
   geom_bar(stat='identity') +
   facet_wrap(~Dept, ncol=6) +
   theme(aspect.ratio=1)
 
-## TODO:
-
-## sample mean
-## sample median
-## sample 100th percentile
-## sample quartiles
-
-## sample variance
-## sample standard deviation
-## sample range
-## sample interquartile range
 
 ## NOTE: Example 5
 ## Data which show the effect of two soporific drugs (increase in hours of sleep
@@ -253,28 +250,67 @@ ggplot(dd, aes(x=Gender, y=V1)) +
 ## ID = person ID
 d <- as.data.table(sleep)
 
-ggplot(d, aes(x=ID, y=extra, colour=group)) +
-  geom_point() +
-  theme(aspect.ratio = 1)
+## If you really needed sleep, which drug would you take?
 
+## This plot might suggest drug 2
 ggplot(d, aes(x=ID, y=extra, fill=group)) +
   geom_bar(
     stat='identity',
     position = 'dodge') +
   theme(aspect.ratio = 1)
 
-ggplot(d, aes(x=extra, fill=group, alpha=0.25)) +
+## There's clearly lots of overlap and noise, but if I had to choose one,
+## I'd still choose drug 2
+extra_mean_1 <- d[group==1, mean(extra)]
+extra_sd_1 <- d[group==1, sd(extra)]
+extra_mean_2 <- d[group==2, mean(extra)]
+extra_sd_2 <- d[group==2, sd(extra)]
+ggplot(d, aes(x=extra, fill=group, alpha=0.1)) +
   geom_histogram(
     breaks=seq(-1,4,by=.1)
   ) +
-  geom_density()
+  theme(aspect.ratio = 1) +
+  geom_density() +
+  geom_vline(xintercept = extra_mean_1, colour='red') +
+  geom_vline(xintercept = extra_mean_2, colour='blue') +
+  geom_segment(
+    x=extra_mean_1,
+    xend=extra_mean_1+extra_sd_1,
+    y=1.5,
+    yend=1.5,
+    colour='red') +
+  geom_segment(
+    x=extra_mean_1,
+    xend=extra_mean_1-extra_sd_1,
+    y=1.5,
+    yend=1.5,
+    colour='red') +
+  geom_segment(
+    x=extra_mean_2,
+    xend=extra_mean_2+extra_sd_2,
+    y=1.6,
+    yend=1.6,
+    colour='blue') +
+  geom_segment(
+    x=extra_mean_2,
+    xend=extra_mean_2-extra_sd_2,
+    y=1.6,
+    yend=1.6,
+    colour='blue')
 
-dd <- d[, mean(extra), .(group)]
+## Often, you won't see histograms in papers. Rather, you,ll see bar graphs with
+## error bars. The height of the bar shows the mean observed value, and the
+## error bars often show somethign called SEM (standard error of the mean). We
+## will get to that later. For now, lets just show standard deviations.
+dd <- d[, .(mean(extra), sd(extra)), .(group)]
 ggplot(dd, aes(x=group, y=V1)) +
   geom_bar(
     stat='identity',
     col='black',
     fill='white') +
+  geom_errorbar(aes(x=group,
+                    ymin=V1+V2,
+                    ymax=V1-V2), width=.2) +
   theme(aspect.ratio=1)
 
 
@@ -298,7 +334,7 @@ ggplot(dd, aes(x=group, y=V1)) +
 ## diet.
 
 ## Diet:
-## a factor with levels 1, …, 4 indicating which experimental diet the chick
+## a factor with levels 1 thru 4 indicating which experimental diet the chick
 ## received.
 
 d <- as.data.table(ChickWeight)
@@ -321,6 +357,14 @@ ggplot(dd, aes(x=V1)) +
 
 
 ## NOTE: Example 7
+## This famous (Fisher's or Anderson's) iris data set gives the measurements in
+## centimeters of the variables sepal length and width and petal length and
+## width, respectively, for 50 flowers from each of 3 species of iris. The
+## species are _Iris setosa_, _versicolor_, and _virginica_.
+
+## ‘iris’ is a data frame with 150 cases (rows) and 5 variables (columns) named
+## ‘Sepal.Length’, ‘Sepal.Width’, ‘Petal.Length’, ‘Petal.Width’, and ‘Species’.
+
 d <- as.data.table(iris)
 
 ggplot(d, aes(x=Sepal.Length)) +
