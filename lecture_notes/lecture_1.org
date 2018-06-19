@@ -1,0 +1,41 @@
+* hello
+- I'm a person
+- who am I and why am I teaching this class (hint: it's not for the money)
+- check out my linkedin / website
+- please ask lots of questions
+* please tell me you own a good computer
+* wtf is my text editor?
+- you guys will probably use R Studio
+- if looking at my program is a pain, I'll try to switch... maybe
+* syllabus
+- we don't have offices
+- 2.5 hours of lecture is probably a bit much
+- lecture outlines, but everything will be subject to improv
+- this is as much, if not more, a class about R than statistics
+-- my primary goal is for you to be genuinely more useful human beings
+-- basically everybody I've asked has said that they didn't feel they learned
+   statistics until they learned R (or whatever other program they used) to --
+   DO -- statistics
+-- contrast this with the theory-centric approach I took in 2012 (see website)
+
+* what is the final project?
+- real data
+- R code report with lots of numbers, pictures, and decisions
+* do you have to code just like me?
+- nope.
+- if you are experienced and have your own style... go for it
+* what is statistics? 
+- describe data in numbers and pictures (descriptive statistics)
+- make evidence-based decisions (inferential statistics)
+
+* lecture outlines
+- again, everything subject to massive amounts of improv
+- all I can really promise is that you will see and use R A LOT
+
+* Lets get to it
+- R demos and prep for HW 1
+- I'm guessing that my R code might be a bit too advanced for first timers
+-- If it is, SORRY. I will adapt.
+-- It's your job to slow me down until we converge on an agreeable style
+-- We have awesome and experienced GSIs... they will help
+* WTF: difference between = and <-???
