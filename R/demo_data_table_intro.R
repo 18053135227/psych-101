@@ -1,6 +1,3 @@
-## TODO: need to get going with R studio and plan on doing all this shit from
-## there...
-## TODO: put data.table cheat sheet in folder
 ## Essentially everything is taken from here, by I ommit things that I'm
 ## guessing would be a bit much for the eager young minds of Psych 101.
 ## https://cran.r-project.org/web/packages/data.table/vignettes/datatable-intro.html
@@ -122,11 +119,6 @@ class(DT[, list(a)])
 DT[, .(a)]
 class(DT[, .(a)])
 DT[, list(a)] == DT[, .(a)]
-
-## PSA: Read about R data types..."list" is another common data type.
-## TODO: So, why have lists and vectors?
-## TODO: I think we need a whole R file on data types... search for online
-## tutorial
 
 ## select column a and b
 DT[, .(a,b)]
@@ -309,8 +301,6 @@ flights[carrier == "AA", ## Only on trips with carrier "AA"
         lapply(.SD, mean), ## compute the mean
         by = .(origin, dest, month), ## for every 'origin,dest,month'
         .SDcols = c("arr_delay", "dep_delay")] ## for just those in .SDcols
-
-## TODO: will we ever have cause to use .SD? I don't see it just yet.
 
 ## NOTE: f) Subset .SD for each group:
 ## return the first two rows for each month

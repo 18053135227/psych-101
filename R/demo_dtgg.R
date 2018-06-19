@@ -75,7 +75,7 @@ ggplot(dd, aes(x=reorder(as.factor(country), N), y=N)) +
 ggplot(dd[1:10], aes(x=reorder(as.factor(country), N), y=N)) +
   geom_bar(stat='identity')
 
-## NOTE: Wait, wtf is reorder(as.factor(country) doing? turns out that to order
+## NOTE: Wait, what is reorder(as.factor(country) doing? turns out that to order
 ## the bars according to N, ggplot needs us to turn country into a "factor" ...
 ## and the order those factors appear determine where ggplot will put them. It's
 ## a pain in the ass, honestly, but I'm sure there's a good reason for it. For
@@ -113,7 +113,6 @@ ggplot(dd, aes(x=factor(Q1, levels=c(1,2,3,4), labels=c('a','b','c','d')))) +
 ## NOTE: There's some magic happening there fore sure....
 ## Sometimes you just gotta google it:
 ## https://stackoverflow.com/questions/36604127/creating-a-bar-plot-with-proportions-on-ggplot
-
 
 ## TODO: error bars or something that shows variability in a statistic
 ## TODO: R simulation-based walk thru of the 5 step program
