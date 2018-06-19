@@ -13,13 +13,18 @@ library(ggplot2)
 ##   data.frames. In the Data section, we already created a data.table using
 ##   fread(). We can also create one using the data.table() function. Here is an
 ##   example:
-DT = data.table(ID = c("b","b","b","a","a","c"), a = 1:6, b = 7:12, c = 13:18)
+DT <- data.table(ID = c("b","b","b","a","a","c"), a = 1:6, b = 7:12, c = 13:18)
+
 DT
 
 ## Introduction to class()
 ## Basically, this is a reminder to pay attention to learn about data types...
 ## which I will surely repeat over and over again throughout the course
 class(DT$ID)
+class(DT$a)
+
+## two different ways of accessing columns in a data.table
+DT[, ID]
 
 ## What's the deal with data.frames and data.tables?
 ## They look pretty darn similar.
@@ -71,6 +76,7 @@ DT[1:2]
 ## thing -- that is, not a thing data.frame has -- that refers to the number of
 ## rows in the data.table. So, in this next call, we are asking to see the last
 ## row in the data.table
+DT[6]
 DT[.N]
 
 ## Look at rows 1, 3, and 5
@@ -78,7 +84,7 @@ DT[c(1,3,5)]
 
 ## NOTE: Begin sorting
 ## sort DT in increasing order based on column "a"
-DT[order(a)]
+DT[order(ID)]
 
 ## sort DT in decreasing order based on column "B"
 DT[order(-b)]
