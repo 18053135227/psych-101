@@ -1,4 +1,4 @@
-## Essentially everything is taken from here, by I ommit things that I'm
+## Essentially everything is taken from here, but I ommit things that I'm
 ## guessing would be a bit much for the eager young minds of Psych 101.
 ## https://cran.r-project.org/web/packages/data.table/vignettes/datatable-intro.html
 ## I saved it here as well:
@@ -151,7 +151,7 @@ DT[, .(b)]
 ## NOTE: Begin: e) Compute or do in j
 
 ## In how many rows is a > b?
-DT[, a > b]
+DT[, .(a > b)]
 DT[, sum(a > b)]
 
 ## For each row, what is the sum of a, b, and c.
@@ -281,7 +281,6 @@ flights[carrier == "AA", mean(dep_delay), .(origin, dest, month)]
 flights[carrier == "AA",
         .(mean(arr_delay), mean(dep_delay)),
         .(origin, dest, month)]
-
 
 ## NOTE: d) Expressions in by
 

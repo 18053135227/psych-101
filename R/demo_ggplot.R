@@ -42,8 +42,18 @@ rm(list=ls())
 
 d <- as.data.table(mpg)
 
+g <- ggplot(data = d, aes(x = displ, y = hwy))
+f <- geom_smooth
+g + f() + facet_wrap(~class*cyl)
+
+
 ggplot(d, aes(x = displ, y = hwy)) +
   geom_point()
+
+ggplot(d, aes(displ, hwy)) +
+  geom_point()
+
+
 
 ## Colour, Size, Shape and other aesthetic attributes
 ## Colour can be used for analysing the outliers, the deviations from the
@@ -71,7 +81,7 @@ ggplot(mpg, aes(displ, hwy)) +
 ## function, do this:
 ggplot(mpg, aes(displ, hwy)) +
   geom_point() +
-  geom_smooth(method = "lm", se = FALSE)
+  geom_smooth(method = "lm", se = TRUE)
 
 ## Boxplots and jittering
 ## When combining a continuious variable, such as highway mileage, with a

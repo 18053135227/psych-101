@@ -1,0 +1,14 @@
+* lingering questions about the course in general?
+** how is homework submitted?
+* questions / issues accessing bcourses or github?
+* question / issues re: RStudio et al?
+* questions about lecture 1?
+* R: difference between = and <-
+* Can I do a better job motivating this basic R stuff?
+* Progress re: sorting data.tables
+* wtf fread from url
+* office hour location
+* wtf ggplot + sign
+* think: bring projector to office hours
+* best to put comments above the line they are meant to refer to
+* assign new columns to data.table (e.g., hw 3b)
