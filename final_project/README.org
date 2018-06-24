@@ -7,8 +7,8 @@
   will be provided.
   
 ** materials for the final
-- data is in *final_project/data*
-- the intro and methods is in *final_project/report*
+- data is in *psych-101/final_project/data*
+- the intro and methods is in *psych-101/final_project/report*
 
 ** everything we will cover is:
 - R, data.table, and ggplot
