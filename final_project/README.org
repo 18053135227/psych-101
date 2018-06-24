@@ -1,33 +1,34 @@
 * grading the final prject
 - the point of the final project is to apply everything we have covered in
   lecture and in homeworks to a real-world scenario.
+  
+** The framing of the project 
+- Write the results section of a paper for which the introduction and methods 
+  will be provided.
 
 ** everything we will cover is:
--- R, data.table, and ggplot
--- descriptive statistics
--- probability and random variables
--- inferential statistics
-
-- The framing of the project will be to write the results section of a paper 
-  for which the introduction and methods will be provided.
-
-- use R, data.table, and ggplot
--- load data into a data.table
--- summarize data with ggplot figures
-
+- R, data.table, and ggplot
 - descriptive statistics
--- make sure the figures indicate relevant descriptive statistics
---- markers to indicate central tendency and data spread (e.g., error bars)
--- make lots of different types of figures
---- x/y scatter plots
---- box plots
---- bar plots
---- histograms
---- etc.
+- probability and random variables
+- inferential statistics
 
-- use inferential statistics to assess the significance of the effects
-  illustrated by your ggplot figures
--- t-tests
--- ANOVA
--- Chi-squared
+*** use R, data.table, and ggplot
+- load data into a data.table
+- summarize data with ggplot figures
+
+*** descriptive statistics
+- make sure the figures indicate relevant descriptive statistics
+-- markers to indicate central tendency and data spread (e.g., error bars)
+- make lots of different types of figures
+-- x/y scatter plots
+-- box plots
+-- bar plots
+-- histograms
 -- etc.
+
+*** use inferential statistics 
+- assess the significance of the effects revealed in your figures
+- t-tests
+- ANOVA
+- Chi-squared
+- etc.
