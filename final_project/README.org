@@ -17,17 +17,13 @@
 - summarize data with ggplot figures
 
 *** descriptive statistics
-- make sure the figures indicate relevant descriptive statistics
--- markers to indicate central tendency and data spread (e.g., error bars)
-- make lots of different types of figures
--- x/y scatter plots
--- box plots
--- bar plots
--- histograms
--- etc.
+- make sure the figures indicate relevant descriptive statistics (e.g., markers to 
+  indicate central tendency and data spread)
+- make lots of different types of figures (e.g., x/y scatter plots, box plots, bar
+  plots, histograms, etc.)
 
 *** use inferential statistics 
-- assess the significance of the effects revealed in your figures
+- assess the significance of the effects revealed in your figures:
 - t-tests
 - ANOVA
 - Chi-squared
