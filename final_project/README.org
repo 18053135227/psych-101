@@ -1,6 +1,8 @@
 * grading the final prject
 - the point of the final project is to apply everything we have covered in
-  lecture and in homeworks to a real-world scenario. E.g., 
+  lecture and in homeworks to a real-world scenario.
+
+** everything we will cover is:
 -- R, data.table, and ggplot
 -- descriptive statistics
 -- probability and random variables
