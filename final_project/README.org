@@ -5,6 +5,10 @@
 ** The framing of the project 
 - Write the results section of a paper for which the introduction and methods 
   will be provided.
+  
+** materials for the final
+- data is in *final_project/data*
+- the intro and methods is in *final_project/report*
 
 ** everything we will cover is:
 - R, data.table, and ggplot
