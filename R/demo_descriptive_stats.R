@@ -18,7 +18,22 @@ ggplot(d, aes(x=noise_levels)) +
   geom_dotplot() +
   theme(aspect.ratio = 1)
 
-## add mean and median to the plot
+## add measures of central tendency to the plot
+## add the sample mean and the sample median to the plot
+## "mean" is pretty much another word for "average"
+## "median" just means the value the splits the data into two even groups
+## mean = sum(all observations) / (number of observations)
+## median = (split the data into two even groups)
+## Also note the use of the word "sample" above
+## Sample just means that we are computing descriptive statistics about the data
+## we observed. It's an important thing to specify because -- in inferential
+## statistics -- we try to guess things about what future samples might look
+## like, and these guesses use very similar / identical words. The magic words
+## that we use to distinguish these worlds are:
+## "sample" mean refers to the data we observe
+## "population" mean refers to our guesses
+## Note that we will refine these definitions as the course proceeds
+
 ## Here, there are no outliers, so mean and median are virtually identical
 noise_mean <- d[, mean(noise_levels)]
 noise_median <- d[, median(noise_levels)]
@@ -33,7 +48,6 @@ ggplot(d, aes(x=noise_levels)) +
 ## Waiting to cross a busy street on the way to class one morning, Professor J.
 ## noted the following times in seconds between cars traveling in the same
 ## direction:
-
 times <- c(6,3,5,6,4,3,5,4,6,3,4,5,4,18)
 times_id <- 1:length(times)
 
@@ -58,6 +72,9 @@ ggplot(d, aes(x=times)) +
   theme(aspect.ratio = 1) +
   geom_vline(xintercept = noise_mean, colour = 'red') +
   geom_vline(xintercept = noise_median, colour = 'blue')
+
+## NOTE: The take-home message for mean vs median is that the mean is more
+## sensitive to outliers than the median
 
 
 ## NOTE: Example 3
@@ -92,6 +109,16 @@ ggplot(d, aes(x=ozone)) +
   geom_histogram(
     col='black',
     fill='white') +
+  scale_y_continuous('count', 1:10) +
+  theme(aspect.ratio = 1)
+
+## investigate the correspondence between dotplots and histograms
+ggplot(d, aes(x=ozone)) +
+  geom_histogram(
+    col='black',
+    fill='white') +
+  geom_dotplot() +
+  scale_y_continuous('count', 1:10) +
   theme(aspect.ratio = 1)
 
 ## You can control how big or small the bins are using the "breaks" argument
@@ -163,8 +190,17 @@ ggplot(d, aes(x=ozone)) +
   geom_vline(xintercept = d[, mean(ozone)], colour='red') +
   geom_vline(xintercept = d[, median(ozone)], colour='blue')
 
-## This seems like a fine time to begin examing "spread"
+## This is a fine time to begin examing "spread"
 ## Add sample variance, standard deviation, and range to the plot
+
+## sample variance =
+## Step 1: Calculate the mean (the average weight).
+## Step 2: Subtract the mean and square the result.
+## Step 3: Work out the average of those differences.
+
+## sample standard deviation = sqrt(sample variance)
+
+## sample range = difference between most extreme values
 ozone_mean<- d[, mean(ozone)]
 ozone_median <- d[, median(ozone)]
 ozone_var <- d[, var(ozone)]
@@ -201,7 +237,6 @@ ggplot(d, aes(x=ozone)) +
     colour='green')
 
 
-
 ## NOTE: Example 4
 ## The UCBAdmissions comes built in with R.
 ## This data set is frequently used for illustrating Simpson's paradox, see
@@ -218,7 +253,7 @@ d <- as.data.table(UCBAdmissions)
 
 ## One interesting question might be: Is there a gender difference in this data?
 
-## Lets examine the bumber of males and females accepted and rejected to each department separately
+## Lets examine the number of males and females accepted and rejected to each department separately
 ggplot(d, aes(x=Gender, y=N)) +
   geom_bar(stat='identity') +
   facet_wrap(~Admit*Dept, ncol=6) +
@@ -239,6 +274,8 @@ ggplot(dd, aes(x=Gender, y=V1)) +
   geom_bar(stat='identity') +
   facet_wrap(~Dept, ncol=6) +
   theme(aspect.ratio=1)
+
+## TODO: Add error bars
 
 
 ## NOTE: Example 5
@@ -313,6 +350,7 @@ ggplot(dd, aes(x=group, y=V1)) +
                     ymax=V1-V2), width=.2) +
   theme(aspect.ratio=1)
 
+## TODO: Provide a link: How to read significance from error bars
 
 ## NOTE: Example 6
 ## ChickWeight
@@ -355,6 +393,7 @@ ggplot(dd, aes(x=V1)) +
   facet_wrap(~Diet) +
   theme(aspect.ratio = 1)
 
+## TODO: bar plots and error bars
 
 ## NOTE: Example 7
 ## This famous (Fisher's or Anderson's) iris data set gives the measurements in
@@ -384,18 +423,5 @@ ggplot(dd, aes(x=value, fill=Species, alpha=0.25)) +
   facet_wrap(~variable, ncol=4) +
   theme(aspect.ratio = 1)
 
-
-## NOTE: Example 8
-## USArrests
-## Murder: murder arrests per 100,000
-## Assault: assault arrests per 100,000
-## Rape: rape arrests per 100,000
-## UrbanPop: percent urban population
-d <- as.data.table(USArrests)
-dd <- melt(d, measure.vars=c('Murder', 'Assault', 'Rape'))
-
-ggplot(dd, aes(x=UrbanPop, y=value)) +
-  geom_point() +
-  facet_wrap(~variable) +
-  theme(aspect.ratio = 1)
-
+## TODO: ask a question
+## TODO: bar plots and error bars
