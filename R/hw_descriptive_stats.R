@@ -28,6 +28,11 @@ rat_weights <- c(120, 116, 94, 120, 112, 112, 106, 102, 118, 112, 116, 98, 116,
 ## The counts of the flies were also recorded for another set of 20 vials that
 ## contained grape juice. The following data sets were obtained:
 
+n_flies_regular_food <- c(15, 20, 31, 16, 22, 22, 23, 33, 38, 28, 25, 20, 21,
+                          23, 29, 26, 40, 20, 19, 31)
+
+n_flies_grape_juice <- c(6, 19, 0, 2, 11, 12, 13, 12, 5, 16, 2, 7, 13, 20, 18,
+                         19, 19, 9, 9, 9)
 
 ## (a) Plot seperate dot plots for the two data sets
 
@@ -36,7 +41,6 @@ rat_weights <- c(120, 116, 94, 120, 112, 112, 106, 102, 118, 112, 116, 98, 116,
 ## value of each distribution on top of each dot plot, and a horizontal line
 ## centered at the mean value and extending 1 standard deviation in either
 ## direction.
-
 
 ## (c) Plot each distribution as a relative frequency historgam. Overlay a
 ## smooth curve estimate of the density. Plot both distributions in the same

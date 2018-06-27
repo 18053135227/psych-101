@@ -1,3 +1,6 @@
-* give out number / update syllabus
+* give out number
+- Feel free to text me for office hours if you can't seem to find me
+- 805-570-0321
 * data.table: assigning / removing columns 
 * questions about homework
+* Provide a link: How to read significance from error bars

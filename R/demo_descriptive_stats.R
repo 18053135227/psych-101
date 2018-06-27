@@ -20,11 +20,14 @@ ggplot(d, aes(x=noise_levels)) +
 
 ## add measures of central tendency to the plot
 ## add the sample mean and the sample median to the plot
+
 ## "mean" is pretty much another word for "average"
 ## "median" just means the value the splits the data into two even groups
+
 ## mean = sum(all observations) / (number of observations)
 ## median = (split the data into two even groups)
-## Also note the use of the word "sample" above
+
+## Also note the use of the word "sample" above.
 ## Sample just means that we are computing descriptive statistics about the data
 ## we observed. It's an important thing to specify because -- in inferential
 ## statistics -- we try to guess things about what future samples might look
@@ -238,47 +241,6 @@ ggplot(d, aes(x=ozone)) +
 
 
 ## NOTE: Example 4
-## The UCBAdmissions comes built in with R.
-## This data set is frequently used for illustrating Simpson's paradox, see
-## Bickel et al (1975). At issue is whether the data show evidence of sex bias
-## in admission practices. There were 2691 male applicants, of whom 1198 (44.5%)
-## were admitted, compared with 1835 female applicants of whom 557 (30.4%) were
-## admitted. This gives a sample odds ratio of 1.83, indicating that males were
-## almost twice as likely to be admitted. In fact, graphical methods (as in the
-## example below) or log-linear modelling show that the apparent association
-## between admission and sex stems from differences in the tendency of males and
-## females to apply to the individual departments (females used to apply more to
-## departments with higher rejection rates).
-d <- as.data.table(UCBAdmissions)
-
-## One interesting question might be: Is there a gender difference in this data?
-
-## Lets examine the number of males and females accepted and rejected to each department separately
-ggplot(d, aes(x=Gender, y=N)) +
-  geom_bar(stat='identity') +
-  facet_wrap(~Admit*Dept, ncol=6) +
-  theme(aspect.ratio=1)
-
-## The last plot may have been a bit much to look at, so lets try to condense
-## by collapsing all departments into one
-dd <- d[, sum(N), .(Gender, Admit)]
-ggplot(dd, aes(x=Gender, y=V1)) +
-  geom_bar(stat='identity') +
-  facet_wrap(~Admit) +
-  theme(aspect.ratio=1)
-
-dd <- d[, (N[Admit=='Admitted'] - N[Admit=='Rejected']) /
-          (N[Admit=='Admitted'] + N[Admit=='Rejected']),
-        .(Gender, Dept)]
-ggplot(dd, aes(x=Gender, y=V1)) +
-  geom_bar(stat='identity') +
-  facet_wrap(~Dept, ncol=6) +
-  theme(aspect.ratio=1)
-
-## TODO: Add error bars
-
-
-## NOTE: Example 5
 ## Data which show the effect of two soporific drugs (increase in hours of sleep
 ## compared to control) on 10 patients. The group variable name may be misleading
 ## about the data: They represent measurements on 10 persons, not in groups.
@@ -297,13 +259,15 @@ ggplot(d, aes(x=ID, y=extra, fill=group)) +
   theme(aspect.ratio = 1)
 
 ## There's clearly lots of overlap and noise, but if I had to choose one,
-## I'd still choose drug 2
+## I'd still choose drug 2.
+## TODO: MJC --- something is whack here
 extra_mean_1 <- d[group==1, mean(extra)]
 extra_sd_1 <- d[group==1, sd(extra)]
 extra_mean_2 <- d[group==2, mean(extra)]
 extra_sd_2 <- d[group==2, sd(extra)]
-ggplot(d, aes(x=extra, fill=group, alpha=0.1)) +
+ggplot(d, aes(x=extra, fill=group, alpha=.1)) +
   geom_histogram(
+    aes(y=..density..),
     breaks=seq(-1,4,by=.1)
   ) +
   theme(aspect.ratio = 1) +
@@ -350,7 +314,69 @@ ggplot(dd, aes(x=group, y=V1)) +
                     ymax=V1-V2), width=.2) +
   theme(aspect.ratio=1)
 
-## TODO: Provide a link: How to read significance from error bars
+
+## NOTE: Example 5
+## The UCBAdmissions comes built in with R.
+## This data set is frequently used for illustrating Simpson's paradox, see
+## Bickel et al (1975). At issue is whether the data show evidence of sex bias
+## in admission practices. There were 2691 male applicants, of whom 1198 (44.5%)
+## were admitted, compared with 1835 female applicants of whom 557 (30.4%) were
+## admitted. This gives a sample odds ratio of 1.83, indicating that males were
+## almost twice as likely to be admitted. In fact, graphical methods (as in the
+## example below) or log-linear modelling show that the apparent association
+## between admission and sex stems from differences in the tendency of males and
+## females to apply to the individual departments (females used to apply more to
+## departments with higher rejection rates).
+d <- as.data.table(UCBAdmissions)
+
+## One interesting question might be: Is there a gender difference in this data?
+
+## Lets examine the number of males and females accepted and rejected to each department separately
+ggplot(d, aes(x=Gender, y=N)) +
+  geom_bar(stat='identity') +
+  facet_wrap(~Admit*Dept, ncol=6) +
+  theme(aspect.ratio=1)
+
+## The last plot may still have been a bit much to look at, so lets try to condense
+## by collapsing all departments into one
+dd <- d[, .(mean(N), sd(N)), .(Gender, Admit)]
+setnames(dd, c('V1', 'V2'), c('N_mean', 'N_err'))
+ggplot(dd, aes(x=Gender, y=N_mean)) +
+  geom_bar(stat='identity') +
+  geom_errorbar(aes(ymin=N_mean-N_err, ymax=N_mean+N_err, width=0.25)) +
+  facet_wrap(~Admit) +
+  theme(aspect.ratio=1)
+
+## You will almost never see standard deviation used for error bars
+## Rather, something called the standard error of the mean (SEM) is often used
+## We will learn more about SEM in more detail in a future lecture
+dd <- d[, .(mean(N), sd(N)/sqrt(.N)), .(Gender, Admit)]
+setnames(dd, c('V1', 'V2'), c('N_mean', 'N_err'))
+ggplot(dd, aes(x=Gender, y=N_mean)) +
+  geom_bar(stat='identity') +
+  geom_errorbar(aes(ymin=N_mean-N_err, ymax=N_mean+N_err, width=0.25)) +
+  facet_wrap(~Admit) +
+  theme(aspect.ratio=1)
+
+
+## Error bar plots might suggest that there is a gender difference (i.e., that
+## more males are admitted than females)... but really?
+dd <- d[, (N[Admit=='Admitted'] - N[Admit=='Rejected']) /
+          (N[Admit=='Admitted'] + N[Admit=='Rejected']),
+        .(Gender, Dept)]
+setnames(dd, 'V1', 'Proportion_Admitted')
+ggplot(dd, aes(x=Gender, y=Proportion_Admitted)) +
+  geom_bar(stat='identity') +
+  facet_wrap(~Dept, ncol=6) +
+  theme(aspect.ratio=1)
+
+## The last plot suggests no difference... hmm. So is there or isn't there?
+## In this situation -- which is most situations -- we will really only be
+## looking to see that you have inspected the data in a variety of ways (e.g.,
+## different plot types, collapsing across different variables, etc.), and are
+## doing your best to reason about the data. Things will get more formal in
+## later lectures (e.g., when we cover Null Hypothesis Significance Testing).
+
 
 ## NOTE: Example 6
 ## ChickWeight
@@ -393,7 +419,9 @@ ggplot(dd, aes(x=V1)) +
   facet_wrap(~Diet) +
   theme(aspect.ratio = 1)
 
-## TODO: bar plots and error bars
+## TODO: possibly a homework problem --- bar graph with error bars
+## Which feed would you choose?
+
 
 ## NOTE: Example 7
 ## This famous (Fisher's or Anderson's) iris data set gives the measurements in
@@ -423,5 +451,7 @@ ggplot(dd, aes(x=value, fill=Species, alpha=0.25)) +
   facet_wrap(~variable, ncol=4) +
   theme(aspect.ratio = 1)
 
-## TODO: ask a question
-## TODO: bar plots and error bars
+## TODO: possibly a homework problem --- bar graph with error bars
+## Do you think there are any significant differences between species according
+## to ‘Sepal.Length’, ‘Sepal.Width’, ‘Petal.Length’, or ‘Petal.Width’?
+
