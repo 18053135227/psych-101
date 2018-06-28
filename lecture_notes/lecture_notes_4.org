@@ -1,0 +1,9 @@
+* section room has changed
+- all sections are now in:
+- Moffitt 150N
+* quick comment from me
+* questions / concerns?
+* keeping the data.table syntax straight
+- [row_stuff, col_stuff, grouping_stuff]
+- I remember because (row, col) is the order in matrices
+- d[row_stuff, col_stuff, grouping_stuff]

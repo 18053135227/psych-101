@@ -107,4 +107,4 @@ class(dtcollege)
 ## state tuition’ below 10000, have a top 10 student percentage above 30?
 
 ## c. How many Colleges with less than 1000 applications received, have a
-## ‘Top10perc’ above 20 OR a ‘Top25perc’ above 30?
+## ‘Top10perc’ above 20 a ‘Top25perc’ above 30?

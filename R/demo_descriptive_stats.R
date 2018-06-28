@@ -104,8 +104,6 @@ ozone_id <- 1:length(ozone)
 
 d <- data.table(ozone, ozone_id)
 
-## TODO: It would really be nice to combine plots into one figure
-
 ## Before prepping for this class, I'd never seen a dotplot. In my experience, a
 ## histogram is by far the more common diagnostic tool.
 ggplot(d, aes(x=ozone)) +
@@ -260,12 +258,11 @@ ggplot(d, aes(x=ID, y=extra, fill=group)) +
 
 ## There's clearly lots of overlap and noise, but if I had to choose one,
 ## I'd still choose drug 2.
-## TODO: MJC --- something is whack here
 extra_mean_1 <- d[group==1, mean(extra)]
 extra_sd_1 <- d[group==1, sd(extra)]
 extra_mean_2 <- d[group==2, mean(extra)]
 extra_sd_2 <- d[group==2, sd(extra)]
-ggplot(d, aes(x=extra, fill=group, alpha=.1)) +
+ggplot(d, aes(x=extra, fill=group, alpha=0.9)) +
   geom_histogram(
     aes(y=..density..),
     breaks=seq(-1,4,by=.1)
@@ -299,7 +296,7 @@ ggplot(d, aes(x=extra, fill=group, alpha=.1)) +
     yend=1.6,
     colour='blue')
 
-## Often, you won't see histograms in papers. Rather, you,ll see bar graphs with
+## Often, you won't see histograms in papers. Rather, you'll see bar graphs with
 ## error bars. The height of the bar shows the mean observed value, and the
 ## error bars often show somethign called SEM (standard error of the mean). We
 ## will get to that later. For now, lets just show standard deviations.
@@ -314,31 +311,49 @@ ggplot(dd, aes(x=group, y=V1)) +
                     ymax=V1-V2), width=.2) +
   theme(aspect.ratio=1)
 
-
 ## NOTE: Example 5
 ## The UCBAdmissions comes built in with R.
 ## This data set is frequently used for illustrating Simpson's paradox, see
 ## Bickel et al (1975). At issue is whether the data show evidence of sex bias
-## in admission practices. There were 2691 male applicants, of whom 1198 (44.5%)
-## were admitted, compared with 1835 female applicants of whom 557 (30.4%) were
-## admitted. This gives a sample odds ratio of 1.83, indicating that males were
-## almost twice as likely to be admitted. In fact, graphical methods (as in the
-## example below) or log-linear modelling show that the apparent association
-## between admission and sex stems from differences in the tendency of males and
-## females to apply to the individual departments (females used to apply more to
-## departments with higher rejection rates).
+## in admission practices. E.g., are males or females more likely to be admitted
 d <- as.data.table(UCBAdmissions)
 
-## One interesting question might be: Is there a gender difference in this data?
+## Lets start with the basics by plotting a histogram
+## Just in case it hasn't sunk in yet, histograms answer the question: How is
+## our data **distributed**
 
-## Lets examine the number of males and females accepted and rejected to each department separately
-ggplot(d, aes(x=Gender, y=N)) +
-  geom_bar(stat='identity') +
-  facet_wrap(~Admit*Dept, ncol=6) +
-  theme(aspect.ratio=1)
+## Since we asked a question about **admission** lets start by only
+## looking at the number of males and females admitted (as opposed to rejected).
 
-## The last plot may still have been a bit much to look at, so lets try to condense
-## by collapsing all departments into one
+## Use a histogram to examine the distribution across departments of number of
+## males and females admitted
+b <- seq(0,500,50)
+ggplot(d[Admit=='Admitted'], aes(x=N, fill=Gender, alpha=0.1)) +
+  geom_histogram(aes(y=..density..), breaks=b) +
+  geom_density() +
+  theme(aspect.ratio = 1)
+
+## Q: What is the above histogram really showing? A: You can think of it as
+## the probability distribution (which we will cover formally next week) that a
+## random department will admit N students
+
+## Q: If you didn't know anything else, and you only had this histogram, how
+## many males and females would you guess will be accepted the next time around?
+
+## So, more males tend to be accepted? Is it settled?
+## What if more males are also rejected?
+b <- seq(0,500,50)
+ggplot(d, aes(x=N, fill=Gender, alpha=0.1)) +
+  geom_histogram(aes(y=..density..), breaks=b) +
+  geom_density() +
+  facet_wrap(~Admit) +
+  theme(aspect.ratio = 1)
+
+## Together, these histograms frame an interesting question... it's interesting
+## because the answer to our question isn't totally clear just by looking at
+## it... at least not yet. What can we do to clarify the situation?
+
+## Making the simplest possible plot is always a good thing to explore
 dd <- d[, .(mean(N), sd(N)), .(Gender, Admit)]
 setnames(dd, c('V1', 'V2'), c('N_mean', 'N_err'))
 ggplot(dd, aes(x=Gender, y=N_mean)) +
@@ -347,9 +362,12 @@ ggplot(dd, aes(x=Gender, y=N_mean)) +
   facet_wrap(~Admit) +
   theme(aspect.ratio=1)
 
-## You will almost never see standard deviation used for error bars
-## Rather, something called the standard error of the mean (SEM) is often used
-## We will learn more about SEM in more detail in a future lecture
+## Woah, thoser error bars are enormous.
+## What is the point of error bars anyway?
+## Useful error bars tell us something about the range of values future data is
+## likely to fall within. Turns out, standard error (we will discuss formally
+## next week) does a better job of this than straight sd.
+## SEM = sd / sqrt(N)
 dd <- d[, .(mean(N), sd(N)/sqrt(.N)), .(Gender, Admit)]
 setnames(dd, c('V1', 'V2'), c('N_mean', 'N_err'))
 ggplot(dd, aes(x=Gender, y=N_mean)) +
@@ -358,16 +376,34 @@ ggplot(dd, aes(x=Gender, y=N_mean)) +
   facet_wrap(~Admit) +
   theme(aspect.ratio=1)
 
+## Hmm. I'm still having a hard time making a decision. Looks like more males
+## are accepted, but more males applied overall. Seems like what we need is a
+## way to control for the number of applicants overall. We do this next.
 
-## Error bar plots might suggest that there is a gender difference (i.e., that
-## more males are admitted than females)... but really?
-dd <- d[, (N[Admit=='Admitted'] - N[Admit=='Rejected']) /
-          (N[Admit=='Admitted'] + N[Admit=='Rejected']),
-        .(Gender, Dept)]
-setnames(dd, 'V1', 'Proportion_Admitted')
-ggplot(dd, aes(x=Gender, y=Proportion_Admitted)) +
+## We are asked if the probability of being admitted is different for males and
+## females. We're going to get much deeper into probability next week, but for
+## now, its safe to go with our intuition. Probability is how likely something
+## is to occur, and in the absence of other information, how likely something is
+## to occur can be estimated by the proportion of times it did occur in some
+## data (which we will call a "sample"). Lets compute these proportions for the
+## present question.
+dd <- d[,
+        N[Admit=='Admitted'] / (N[Admit=='Admitted'] + N[Admit=='Rejected']),
+        .(Dept, Gender)]
+setnames(dd, 'V1', 'p_admit')
+
+## Notice the following plot does not include error bars... Why?
+ggplot(dd, aes(x=Gender, y=p_admit)) +
   geom_bar(stat='identity') +
-  facet_wrap(~Dept, ncol=6) +
+  facet_wrap(~Dept) +
+  theme(aspect.ratio=1)
+
+## examine the mean p_admit across all departments
+ddd <- dd[, .(mean(p_admit), sd(p_admit)/sqrt(.N)), .(Gender)]
+setnames(ddd, c('V1','V2'), c('p_mean', 'p_err'))
+ggplot(ddd, aes(x=Gender, y=p_mean)) +
+  geom_bar(stat='identity') +
+  geom_errorbar(aes(ymin=p_mean-p_err, ymax=p_mean+p_err, width=0.25)) +
   theme(aspect.ratio=1)
 
 ## The last plot suggests no difference... hmm. So is there or isn't there?
@@ -403,15 +439,26 @@ ggplot(dd, aes(x=Gender, y=Proportion_Admitted)) +
 
 d <- as.data.table(ChickWeight)
 
+## begin by plotting x=time y=weight for all rats separately and grouped by diet
 ggplot(d, aes(x=Time, y=weight, fill=Chick)) +
   geom_line() +
   facet_wrap(~Diet)
 
+## TODO: Let try these as sorta quick in-class exercises
+## plot mean of all rats per groupd
 dd <- d[, mean(weight), .(Time, Diet)]
 ggplot(dd, aes(x=Time, y=V1, col=Diet)) +
   geom_line()
 
-## Lets insepct final weights
+## add error bars
+dd <- d[, .(mean(weight), sd(weight)/sqrt(.N)), .(Time, Diet)]
+setnames(dd, c('V1','V2'), c('weight_mean', 'weight_err'))
+ggplot(dd, aes(x=Time, y=weight_mean, col=Diet)) +
+  geom_line() +
+  geom_errorbar(aes(ymin=weight_mean-weight_err, ymax=weight_mean+weight_err))
+
+## Lets inspect the distribution of final weights
+## plot histogram of final weights seperately for each group
 dd <- d[, weight[.N], .(Chick, Diet)]
 ggplot(dd, aes(x=V1)) +
   geom_histogram(aes(y=..density..)) +
@@ -419,8 +466,26 @@ ggplot(dd, aes(x=V1)) +
   facet_wrap(~Diet) +
   theme(aspect.ratio = 1)
 
-## TODO: possibly a homework problem --- bar graph with error bars
+## Inspect the distribution of final weights using a box plot
+dd <- d[, weight[.N], .(Chick, Diet)]
+ggplot(dd, aes(x=Diet, y=V1)) +
+  geom_boxplot()
+
+## Inspect the final weights using a bar graph with error bars
+dd <- d[, weight[.N], .(Chick, Diet)]
+ddd <- dd[, .(mean(V1), sd(V1)/sqrt(.N)), .(Diet)]
+setnames(ddd, c('V1','V2'), c('mean','err'))
+ggplot(ddd, aes(x=Diet, y=mean)) +
+  geom_bar(stat='identity') +
+  geom_errorbar(aes(ymin=mean-err, ymax=mean+err, width=0.25))
+
 ## Which feed would you choose?
+## How confident are you in your choice?
+## Try to frame your answer in terms of likelihood, probability and the plots we
+## just made
+## Would your decision be different at day 10 than at day 20?
+
+## What do you think the distribution of weights would look like at day 30?
 
 
 ## NOTE: Example 7
@@ -434,11 +499,19 @@ ggplot(dd, aes(x=V1)) +
 
 d <- as.data.table(iris)
 
+## Use a histogram to inspect the distrbution of sepal length separately for
+## each species.
 ggplot(d, aes(x=Sepal.Length)) +
   geom_histogram(aes(y=..density..)) +
   geom_density() +
   facet_wrap(~Species) +
   theme(aspect.ratio = 1)
+
+## Use a histogram to inspect the distribution of every dependent variable
+## (‘Sepal.Length’, ‘Sepal.Width’, ‘Petal.Length’, and ‘Petal.Width’).
+
+## How the heck are we going to do this with d in it's current format?
+## What format do we want / need it in to make it play nice with ggplot?
 
 ## Convert to long format
 dd <- melt(d, id.vars='Species')
@@ -451,7 +524,16 @@ ggplot(dd, aes(x=value, fill=Species, alpha=0.25)) +
   facet_wrap(~variable, ncol=4) +
   theme(aspect.ratio = 1)
 
-## TODO: possibly a homework problem --- bar graph with error bars
-## Do you think there are any significant differences between species according
-## to ‘Sepal.Length’, ‘Sepal.Width’, ‘Petal.Length’, or ‘Petal.Width’?
+## inspect the distribution with boxplots instead of histograms
+ggplot(dd, aes(x=Species, y=value)) +
+  geom_boxplot() +
+  facet_wrap(~variable, ncol=4) +
+  theme(aspect.ratio = 1)
 
+## TODO: possibly a homework problem --- bar graph with error bars Do you think
+## there are any significant differences between species according to
+## ‘Sepal.Length’, ‘Sepal.Width’, ‘Petal.Length’, or ‘Petal.Width’?
+
+## TODO: If you go out and observe an iris of each of the 3 species discussed above,
+## what values of sepal length, sepal width, petal length, and petal width do
+## you think you are most likely to observe?

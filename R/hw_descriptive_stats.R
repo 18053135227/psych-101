@@ -60,3 +60,56 @@ n_flies_grape_juice <- c(6, 19, 0, 2, 11, 12, 13, 12, 5, 16, 2, 7, 13, 20, 18,
 ## (c) Suppose that in a bet, you are required to place a bet on the numerical
 ## value of one of "Girth", "height", "Volume". Which would you choose to bet
 ## on, and what numerical value would you bet on?
+
+## NOTE: 4
+## ChickWeight
+## The body weights of the chicks were measured at birth and every second day
+## thereafter until day 20. They were also measured on day 21. There were four
+## groups on chicks on different protein diets.
+
+## weight:
+## a numeric vector giving the body weight of the chick (gm).
+
+## Time:
+## a numeric vector giving the number of days since birth when the measurement
+## was made.
+
+## Chick:
+## an ordered factor with levels 18 < … < 48 giving a unique identifier for the
+## chick. The ordering of the levels groups chicks on the same diet together and
+## orders them according to their final weight (lightest to heaviest) within
+## diet.
+
+## Diet:
+## a factor with levels 1 thru 4 indicating which experimental diet the chick
+## received.
+d <- as.data.table(ChickWeight)
+
+## (a) begin by plotting x=time y=weight for all rats separately and grouped by diet
+
+## (b) plot mean of all rats per groupd
+
+## (c) add error bars
+
+## (d) Lets inspect the distribution of final weights
+## plot histogram of final weights seperately for each group
+
+## (e) Inspect the distribution of final weights using a box plot
+
+## (f) Inspect the final weights using a bar graph with error bars
+
+## (g)
+## Which feed would you choose?
+## How confident are you in your choice?
+## Would your decision be different at day 10 than at day 20?
+
+## Try to frame your answer in terms of likelihood, probability and the plots we
+## just made
+
+
+## (h):
+## What do you think the distribution of weights would look like at
+## day 30?
+
+## We will eventually get to formal methods for doing this, but for now just use
+## intuition and critical thinking to take a stab at this question
