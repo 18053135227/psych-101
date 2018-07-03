@@ -1,6 +1,8 @@
 library('data.table')
 library('ggplot2')
 
+rm(list = ls())
+
 ## NOTE: Much -- if not all -- of the following material is dealing at the level
 ## of population. That is, we are not dealing with datasets and trying to infer
 ## population level knowledge. Rather, we are given some form of population
@@ -69,8 +71,8 @@ ggplot(dd, aes(x=V1, y=N)) +
   geom_point() +
   geom_segment(aes(xend=V1, yend=0)) +
   xlab('X = number of A preferences') +
-  ylab('Probability')
-
+  ylab('Probability') +
+  theme(aspect.ratio = 1)
 
 
 ## NOTE: Example 2
@@ -107,7 +109,8 @@ ggplot(d, aes(x=x, y=p)) +
   geom_point() +
   geom_segment(aes(xend=x, yend=0)) +
   xlab('X = number of defective radios in the sample') +
-  ylab('Probability')
+  ylab('Probability') +
+  theme(aspect.ratio = 1)
 
 
 ## NOTE: Example 3
@@ -122,9 +125,9 @@ ggplot(d, aes(x=x, y=p)) +
 ## Then the sample space is:
 ## S = {S, SF, SSF, SSSF, ...}
 
-## Youe can see that it's impossible to make a complete list of all the values and their
-## probabilities. However, this is a well studied problem, and it turns out that there is
-## an formula that will give p(x) for any x:
+## You can see that it's impossible to make a complete list of all the values
+## and their probabilities. However, this is a well studied problem, and it
+## turns out that there is an formula that will give p(x) for any x:
 ## p(x) = (1/3)*(2/3)^(x-1)
 ## Also, good ol' R has it built right in:
 ## pgeom()
@@ -132,8 +135,8 @@ ggplot(d, aes(x=x, y=p)) +
 ## https://en.wikipedia.org/wiki/Geometric_distribution
 
 ## Compute p(x>=3):
-## Note that the first arg below is 1 (instead of the 2 that you might expect),
-## because pgeom() starts counting from 0, not 1.
+## Note that the first arg below is 1 (instead of the 2 that you might expect).
+## This is because pgeom() starts counting from 0, not 1.
 pgeom(1, 1/3, lower.tail=FALSE)
 
 ## plot geometric probability distribution
@@ -141,9 +144,32 @@ x <- 0:10
 y <- dgeom(x, 1/3)
 d <- data.table(x,y)
 ggplot(d, aes(x=x,y=y)) +
-  geom_line() +
+  geom_point() + # we use point because it's a discrete distribution
   xlab('X = number trials until first success') +
-  ylab('Probability')
+  ylab('Probability') +
+  theme(aspect.ratio = 1)
+
+## draw a sample from the above geometric distribution and plot it with a
+## histogram
+## TODO: Play with "n"
+n <- 100000
+sample <- rgeom(n, 1/3)
+d <- data.table(sample)
+b <- seq(0.1,10,1)
+ggplot(d, aes(sample)) +
+  geom_histogram(aes(y=..density..),breaks=b) +
+  theme(aspect.ratio = 1)
+
+## Histogram really wasn't the best thing to use here... that's the reason for
+## weird breaks. Histograms are well suited for continuous random variables, but
+## not so much for discrete random variables.
+dd <- data.table(table(d))
+setnames(dd, 'd', 'x')
+dd[, p_est := N / n]
+dd[, x := as.integer(x)]
+ggplot(dd, aes(x=x, y=p_est)) +
+  geom_bar(stat='identity') +
+  theme(aspect.ratio = 1)
 
 
 ## NOTE: Example 4
@@ -173,14 +199,13 @@ dd <- melt(d, id.vars=1, measure.vars=2:3, value.name='p')
 ggplot(dd, aes(x=value, y=p)) +
   geom_point() +
   geom_segment(aes(xend=value, yend=0)) +
-  facet_wrap(~variable)
+  facet_wrap(~variable) +
+  theme(aspect.ratio = 1)
 
-## One point of this example is to introduce the concepts of "central tendency"
-## ## and "spread". Brand A has more spread than brand B, and its central
-## tendancy ## appears to be something like 2 or 3, wheras brand B has central
-## tendancy of 1 ## or so. ## One of the most common measures of central
-## tendancy of a distribution you will encounter is called the "expected value"
-## of a distribution. It is computed:
+## Brand A has more spread (variance) than brand B, and its central tendency
+## (mean) appears to be something like 2 or 3, wheras brand B has a mean of 1 or
+## so. The mean of a distribution is also called the "expected value" of a
+## distribution. Recall that it is computed:
 
 ## x1*p(x1) + x2*p(x2) + ... + xn*p(xn)
 
@@ -191,10 +216,18 @@ E_y <- 0*.23 + 1*.48 + 2*.29 + 3*0 + 4*0 + 5*0
 ## We can do this more efficiently by using the data.table
 dd[, sum(value*p), .(variable)]
 
+## Actually, there is a subtle yet gigantic difference between the means we
+## computed in the descriptive statistics lectures and homeworks, and the
+## expected values we are discussing here. That big difference is the difference
+## between a sample and a population. Briefly:
+
+## TODO: There is a lot here. Is it adequately treated?
+## sample = some numbers that came from an experiment
+## population = the distribution that generated those numbers
+
 ## The expected value of a distribution is also called the "population mean."
-## mean(data) is an **estimate** for the population mean
-## Can't demo that here because we were given p's, not data.
-## The true value of the population mean is given by the almighty formula
+## mean(data) is the sample mean of some data. It is an **estimate** for the
+## population mean. Here, we are given true p's, not data.
 
 
 ## NOTE: Example 5
@@ -231,7 +264,7 @@ dd[, 50*sum(value * p) - 20, variable]
 
 
 ## NOTE: Variance - A measure of spread
-## Variance = The expected squared deviation from the mean
+## Population Variance = The expected squared deviation from the mean
 ## Var(X) = E((X - E(X))^2)
 ## Let E(X) = mu
 ## Then:
@@ -243,8 +276,12 @@ dd[, 50*sum(value * p) - 20, variable]
 ## Var(X) = E(X^2) - mu^2
 ## Var(X) = sum(x^2*p_x) - mu^2
 
+## The sample mean is an estimate for the population mean, and the sample
+## variance is an estimate for the population variance.
+
 ## NOTE: Example 6
-## Comptue the variance and standard deviation of X and Y from the above example.
+## Comptue the (population) variance and standard deviation of X and Y from the
+## above example.
 
 ## X = number of units of brand A sold in a week
 ## Y = number of units of brand B sold in a week

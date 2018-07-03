@@ -7,3 +7,5 @@
 - [row_stuff, col_stuff, grouping_stuff]
 - I remember because (row, col) is the order in matrices
 - d[row_stuff, col_stuff, grouping_stuff]
+* TODO: annouce chick names
+* TODO: come up with / find a better .SD explanation / example

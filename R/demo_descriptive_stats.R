@@ -362,12 +362,18 @@ ggplot(dd, aes(x=Gender, y=N_mean)) +
   facet_wrap(~Admit) +
   theme(aspect.ratio=1)
 
+ggplot(dd, aes(x=Admit, y=N_mean)) +
+  geom_bar(stat='identity') +
+  geom_errorbar(aes(ymin=N_mean-N_err, ymax=N_mean+N_err, width=0.25)) +
+  facet_wrap(~Gender) +
+  theme(aspect.ratio=1)
+
 ## Woah, thoser error bars are enormous.
 ## What is the point of error bars anyway?
 ## Useful error bars tell us something about the range of values future data is
 ## likely to fall within. Turns out, standard error (we will discuss formally
 ## next week) does a better job of this than straight sd.
-## SEM = sd / sqrt(N)
+## SEM = sd / sqrt(number_of_observations)
 dd <- d[, .(mean(N), sd(N)/sqrt(.N)), .(Gender, Admit)]
 setnames(dd, c('V1', 'V2'), c('N_mean', 'N_err'))
 ggplot(dd, aes(x=Gender, y=N_mean)) +
@@ -444,10 +450,10 @@ ggplot(d, aes(x=Time, y=weight, fill=Chick)) +
   geom_line() +
   facet_wrap(~Diet)
 
-## TODO: Let try these as sorta quick in-class exercises
 ## plot mean of all rats per groupd
 dd <- d[, mean(weight), .(Time, Diet)]
-ggplot(dd, aes(x=Time, y=V1, col=Diet)) +
+setnames(dd, 'V1', 'weight_mean')
+ggplot(dd, aes(x=Time, y=weight_mean, col=Diet)) +
   geom_line()
 
 ## add error bars
@@ -460,7 +466,8 @@ ggplot(dd, aes(x=Time, y=weight_mean, col=Diet)) +
 ## Lets inspect the distribution of final weights
 ## plot histogram of final weights seperately for each group
 dd <- d[, weight[.N], .(Chick, Diet)]
-ggplot(dd, aes(x=V1)) +
+setnames(dd, 'V1', 'final_weight')
+ggplot(dd, aes(x=final_weight)) +
   geom_histogram(aes(y=..density..)) +
   geom_density() +
   facet_wrap(~Diet) +
@@ -468,12 +475,15 @@ ggplot(dd, aes(x=V1)) +
 
 ## Inspect the distribution of final weights using a box plot
 dd <- d[, weight[.N], .(Chick, Diet)]
-ggplot(dd, aes(x=Diet, y=V1)) +
-  geom_boxplot()
+setnames(dd, 'V1', 'final_weight')
+ggplot(dd, aes(x=Diet, y=final_weight)) +
+  geom_boxplot() +
+  geom_point()
 
 ## Inspect the final weights using a bar graph with error bars
 dd <- d[, weight[.N], .(Chick, Diet)]
-ddd <- dd[, .(mean(V1), sd(V1)/sqrt(.N)), .(Diet)]
+setnames(dd, 'V1', 'final_weight')
+ddd <- dd[, .(mean(final_weight), sd(final_weight)/sqrt(.N)), .(Diet)]
 setnames(ddd, c('V1','V2'), c('mean','err'))
 ggplot(ddd, aes(x=Diet, y=mean)) +
   geom_bar(stat='identity') +
@@ -483,6 +493,7 @@ ggplot(ddd, aes(x=Diet, y=mean)) +
 ## How confident are you in your choice?
 ## Try to frame your answer in terms of likelihood, probability and the plots we
 ## just made
+
 ## Would your decision be different at day 10 than at day 20?
 
 ## What do you think the distribution of weights would look like at day 30?
