@@ -54,8 +54,8 @@ n_flies_grape_juice <- c(6, 19, 0, 2, 11, 12, 13, 12, 5, 16, 2, 7, 13, 20, 18,
 ## (a) load the built in data set "trees" into a data.table
 
 ## (b) plot a separate relative frequency histogram for "Girth", "height",
-## "Volume". For each, overlay a smooth curve estimate of the denstity,
-## andindicate mean values via vertical lines.
+## "Volume". For each, overlay a smooth curve estimate of the density, and
+## indicate mean values via vertical lines.
 
 ## (c) Suppose that in a bet, you are required to place a bet on the numerical
 ## value of one of "Girth", "height", "Volume". Which would you choose to bet

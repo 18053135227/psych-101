@@ -14,6 +14,24 @@ rm(list = ls())
 ## (iii) Important definitions and high level concepts:
 
 
+## "real" statistics
+## formal method for all the intuitive stuff we've done so far
+## we are not there yet... but we're close
+## It's essentially the scientific method framed in stats and math and stuff.
+
+## (1) state your H's
+## H0: D1 == D2
+## H1: D1 > D2
+
+## (2) find a "statistic" (similar or even same as descriptive statistic) for
+## the "parameters" in (1).
+
+## (3, 4, 5) NHST is weird:
+## Assume that H0 is true
+## Then ask, "how likely is it -- what is the probability -- that we observe our
+## data if H0 is true?"
+
+
 ## NOTE: sample space: the collection of all possible distinct outcomes of an
 ## experiment
 
@@ -28,7 +46,8 @@ rm(list = ls())
 ## percolated coffee. Record how many people prefer the instant coffee.
 
 ## Exp. C: Administer an antibiotic to patients suffering from a viral infection
-## until one has an adverse reaction.
+## until one has an adverse reaction. We record the number of patients until the
+## first adverse reaction.
 
 ## Exp. D: Measure the concentration of dust in the air near a construction
 ## site.
@@ -61,7 +80,7 @@ S <- 0:1
 ## Exp. E: Give a child a specific dose of a multivitamin in addition to a
 ## normal diet. Observe the child's height and weight gains after 12 weeks.
 ## Both height and weight are measured on a continuous scale.
-## height won't get smaller, so it's [0 Inf]
+## height won't get smaller, so it's [0, Inf]
 ## weight could be anything so it's [-Inf, Inf]
 ## Hard to concisely state S in this case, but the previous two lines is good
 ## enough for us for now.
@@ -78,7 +97,8 @@ S <- 0:1
 
 ## TODO: Do this as a class
 ## Examining validity of probabilities:
-## The experiment of observing the sex of the older and the younger children in two-children families has four possible outcomes:
+## The experiment of observing the sex of the older and the younger children in
+## two-children families has four possible outcomes:
 
 ## e1 = (B,B)
 ## e2 = (B,G)
@@ -88,8 +108,13 @@ S <- 0:1
 ## Do each of the following assignments of probability satisfy the conditions of
 ## a probability model?
 ## (a) p(e1) = p(e2) = p(e3) = p(e4) = 1/4
-## (b) p(e1) = 3/16, p(e2) = 3/8, p(e3) = 1/4, p(e4) =3/16
+sum(c(1/4,1/4,1/4,1/4))
+
+## (b) p(e1) = 3/16, p(e2) = 3/8, p(e3) = 1/4, p(e4) = 3/16
+sum(c(3/16, 3/8, 1/4, 3/16))
+
 ## (c) p(e1) = 1/2, p(e2) = 1/4, p(e3) = 1/4, p(e4) = 1/2
+sum(c(1/2,1/4,1/4,1/2))
 
 ## Consider the experiment of tossing a balanced die and recording the number on
 ## the face that shows up. Each of the 6 faces on this symmetric cube is as
@@ -105,7 +130,7 @@ die_1 <- c(1,2,3,4,5,6)
 ## that these are weights used in the sample() function below. They are not true
 ## probabilities. You can tell they're not true probabilities because they don't
 ## sum up to 1.
-p_die_1 <- rep(1, 6)
+p_die_1 <- rep(1, 6) / 6
 
 ## specify the number of times we'd like to roll the die
 n_rolls <- 1
@@ -127,6 +152,17 @@ for(i in 1:n_exps) {
   exp_number <- c(exp_number, rep(i, n_rolls))
   exp_results <- c(exp_results, sample(die_1, n_rolls, replace=TRUE, prob=p_die_1))
 }
+
+## for(i in 1:5) {
+##   print(i)
+##   print(i/5)
+## }
+
+## for(i in seq(1,10,2)) {
+##   for(j in 1:3) {
+##     print(c(i,j))
+##   }
+## }
 
 ## convert results from vectors to data.table
 d_50 <- data.table('exp_number'=exp_number, 'exp_results'=exp_results)
@@ -198,6 +234,11 @@ ggplot(dd, aes(x=exp_results, y=mean)) +
   geom_errorbar(aes(ymin=mean-err, ymax=mean+err, width=.25)) +
   facet_wrap(~n_rolls, scale='free') +
   theme(aspect.ratio = 1)
+
+## TODO: Would it be prettier to use a boxplot or some other plot?
+## ggplot(d, aes(x=exp_results, y=N)) +
+##   geom_boxplot() +
+##   facet_wrap(~n_rolls)
 
 ## TODO: Take a min to add another n_rolls condition to this mix... pick a value
 ## for n_rolls that is in between our current values.

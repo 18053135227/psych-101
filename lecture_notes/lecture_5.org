@@ -1,3 +1,4 @@
+* put on bcourses
 * grab most recently updated files
 * questions / comments?
 * This weeks homework is in progress.

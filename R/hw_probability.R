@@ -1,6 +1,88 @@
 library('data.table')
 library('ggplot2')
 
+rm(list = ls())
+
+## NOTE: Suppose that on a N question true / false exam, a student decides to
+## respond randomly.
+
+## (a) List the sample space for when N = 5
+## (b) List the sample space for when N = 6
+
+## NOTE: The sample space for the response of a single person's attitude toward
+## a political issue consists of the three elementary outcomes:
+
+## e1 = {unfavorable}
+## e2 = {favorable}
+## e3 = {undecided}
+
+## Are the following assignments of probability permissible?
+## (a) p(e1) = .4, p(e2) = .5, p(e3) = .1
+## (b) p(e1) = .4, p(e2) = .4, p(e3) = .4
+## (c) p(e1) = .5, p(e2) = .5, p(e3) = 0
+
+## NOTE:
+## Construct a sample space for each of the following experiments:
+
+## (a) Someone claims to be able to taste the difference between the same brand
+## of bottled, tap, and canned draft beer. A glass of each is poured and given
+## to the subject in an unknown order. The subject is asked to identify the
+## contents of each glass. The number of correct identifications will be
+## recorded.
+
+## (b) The number of traffic fatalities in a state next year.
+
+## (c) The length of time a new TV will continue to work satisfactorily without
+## service.
+
+## NOTE:
+## Between 9:00 AM and 9:30 AM one day, a garage mechanic will check the
+## headlight alignment of two cars. For each car, the result will be recorded as
+## follows:
+## Q = Both lights are in alignment
+## L = Only the left light is out of alignment
+## R = Only the right light is out of alignment
+## LR = Both lights are out of alignment
+
+## (a) Using this notation, list the sample space of the experiment.
+
+## (b) Give the compositions of the following events:
+## (i) A = The first car has both lights out of alignment
+## (ii) B = The let light is out of alignment in both cars
+## (iii) C = Exactly one of the cars has both lights in alignment
+
+## (c) Give the compositions of the events:
+## (i) A U B
+## (ii) the compliment of A U B
+## (iii) AB
+
+## NOTE:
+## A sample space has 8 elementary outcomes {e1, e2, ... , e8}.
+## Suppose the events A, B, and C have the following compositions:
+
+## A = {e1, e2, e3, e4}
+## B = {e2, e4, e5, e6}
+## C = {e3, e4, e6, e7}
+
+## Given:
+
+## P(A) = .4
+## P(B) = .5
+## P(C) = .5
+## p(AB) = .2
+## P(AC) = .2
+## P(BC) = .2
+## P(ABC) = .1
+
+## (a) What are the probabilities of each elementary outcome?
+
+
+## (b) Give the compositions for the following events and find their
+## probabilities:
+## (i) A U B
+## (ii) the compliment of A U B U C
+## (iii) The compliment of AB
+
 ## NOTE: Problem 1:
 ## The following table lists the number of survivors in each age group for a
 ## cohort of 1000 white male births in the U.S.
