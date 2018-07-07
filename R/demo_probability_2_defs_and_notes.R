@@ -47,18 +47,16 @@ permutations(3,2,letters[1:3],repeats=TRUE)
 ## choose(n, r)
 
 
+## NOTE: Definition and nomenclature --- conditional probability
+## The probability of A given that B has already occurred
+## The probability of A conditioned on B
+## P(A|B)
+## P(A|B) = P(AB) / P(B)
+## P(AB) = P(B) * P(A|B)
+
+
 ## NOTE: Definition and nomenclature --- Independence
 ## Two events A and B are independent if:
 ## P(A|B) = P(A)
 ## P(B|A) = P(B)
 ## P(AB) = P(A) * P(B)
-
-
-## NOTE: Definition and nomenclature --- conditional probability
-## The probability of A given that B has already occurred
-## The probability of A conditioned on B
-## P(A|B)
-
-## P(A|B) = P(AB) / P(B)
-
-## P(AB) = P(B) * P(A|B)

@@ -20,6 +20,23 @@ rm(list = ls())
 ## TODO: Go over a systematic way of getting sample space in this sort of
 ## situation. Start with N=1 and work up to N=4.
 
+## N=2
+## RR
+## RW
+## WR
+## WW
+
+## N=3
+## RRR
+## RRW
+## RWR
+## RWW
+## WRR
+## WRW
+## WWR
+## WWW
+
+## N=4
 ## RRRR
 ## RRRW
 ## RRWR
@@ -38,7 +55,7 @@ rm(list = ls())
 ## WWWW
 
 e <- c('R', 'W')
-s <- permutations(n=2, r=4, v=e, repeats.allowed=T)
+s <- permutations(n=length(e), r=4, v=e, repeats.allowed=T)
 d <- as.data.table(s)
 
 ## (b) what is the probability that the student will guess correctly at least
@@ -120,7 +137,7 @@ d <- as.data.table(s)
 ## (i) A = only one animal responds
 
 ## By hand:
-## A = {e3, e4, e5}
+## A = {e5, e6, e7}
 
 ## Using data.table
 dd <- as.data.table(d[, .SD == 'R'])
@@ -153,6 +170,8 @@ d[V1=='F' & V2=='F']
 dd[s == 1 | V1==TRUE]
 
 ## (v) AC
+## (i) A = only one animal responds
+## (iii) C = both the first and the second animals fail to respond
 
 ## By hand:
 ## {e7}
@@ -161,6 +180,8 @@ dd[s == 1 | V1==TRUE]
 dd[s==1][V1==FALSE & V2==FALSE]
 
 ## (vi) BC
+## B = there is a response on the first trial
+## C = both the first and the second animals fail to respond
 
 ## By hand:
 ## {}
@@ -169,6 +190,7 @@ dd[s==1][V1==FALSE & V2==FALSE]
 dd[V1==TRUE][V1==FALSE & V2==FALSE]
 
 ## (vii) compliment of B
+## B = there is a response on the first trial
 
 ## By hand:
 ## {e4, e6, e7, e8}
@@ -329,7 +351,7 @@ permutations(length(e), 3, e, repeats.allowed = F)
 
 ## (a) How many distinct results are possible
 
-## Do it the very long ways
+## Do it the very long way
 ## Begin by defining the elementary outcomes (the articles in the urn)
 e <- c('G1',
        'G2',
@@ -425,20 +447,21 @@ p <- n/N
 ## then definitely use the R tools we have been learning.
 
 ## (b) Do this via conditional probability
-## P(S1 S2 C3) = P(S1) * P(S2|S1) * P(C3|S1 S2)
+## P(S1,S2,C3) = P(S1) * P(S2|S1) * P(C3|S1,S2)
 
 ## On the first sample, there are 5 spotted out of 30 total eggs, and since we
 ## sample at random:
 p_s1 <- 5/30
 
-## on the segond sample, there are 4 spotted out of a remaining 29 eggs
+## on the second sample, there are 4 spotted out of a remaining 29 eggs
 p_s2gs1 <- 4/29
 
 ## on the third draw, there are 25 clear eggs out of a remaining 28 eggs
-p_c3gs1s2 <- 5/28
+p_c3gs1s2 <- 25/28
 
 ## all that is left is to multiply them all together
 ## Since my variable names kinda suck, I'm just gonna type the number in...
+## P(S1,S2,C3) = P(S1) * P(S2|S1) * P(C3|S1,S2)
 p <- (5/30) * (4/29) * (25/28)
 
 
@@ -528,8 +551,8 @@ p <- (n_2_spotted * n_1_clear) / N
 ## (a) Are A and B independent?
 ## P(hypertensive) = .20
 ## P(overweight) = .25
-## P(hypertensive and overweight) = .10
-## P(hypertensive) * p(overweight) == P(hypertensive and overweight)
+## P(hypertensive, overweight) = .10
+## P(hypertensive) * p(overweight) == P(hypertensive, overweight)
 .20 * .25 == .10
 
 ## Nope. A and B are not independent.
@@ -570,13 +593,16 @@ p_s_plus <- .02 * .9
 ## P(+) = p(S+) + P(L+) + P(N+)
 
 ## So we need to compute a few things, it would seem...
-## P(P,+) = P(P) * P(+|P)
+## P(L,+) = P(L) * P(+|L)
 p_l_plus <- .10 * .6
 
 ## P(N,+) = P(N) * P(+|N)
 p_n_plus <- .88 * .1
 
+p_plus <- p_s_plus + p_l_plus + p_n_plus
+
 ## so the probability that this person has a serious case of the disease is:
 ## P(S|+) = P(S,+) / P(+)
-p_s_given_plus = p_splus / p_plus
+p_s_given_plus = p_s_plus / p_plus
 
+p_s_given_plus

@@ -1,0 +1,3 @@
+* in general
+need to figure out a better way to tie permutations and combinations into actual
+stats... sucks.
