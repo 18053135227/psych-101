@@ -81,7 +81,7 @@ ggplot(dd, aes(x=value, y=p)) +
 ## Okay, for a population probability distribution, the mean of a distribution
 ## is also called the "expected value" of a distribution. It is computed:
 
-## x1*p(x1) + x2*p(x2) + ... + xn*p(xn)
+## E(X) = population mean = x1*p(x1) + x2*p(x2) + ... + xn*p(xn)
 
 ## Compute expected value of X and Y
 E_x <- 0*.1 + 1*.1 + 2*.2 + 3*.3 + 4*.2 + 5*.1
@@ -89,18 +89,25 @@ E_y <- 0*.23 + 1*.48 + 2*.29 + 3*0 + 4*0 + 5*0
 
 ## We can do this more efficiently by using the data.table
 dd[, sum(value*p), .(variable)]
+dd[, pop_mean := sum(value*p), .(variable)]
 
 ## Now, suppose that a profit of $50 is realized on each unit sold and that the
 ## weekly fixed cost is $20. What is the expected net profit?
 
 ## Expected net profit:
 ## (profit per sale) * (expected number of units sold) - (weekly fixed cost)
-dd[, 50*sum(value * p) - 20, variable]
+dd[, 50*sum(value * p) - 20, .(variable)]
+dd[, 50*pop_mean - 20, .(variable)]
 
 
 ## NOTE: Variance - A measure of spread
 ## Population Variance = The expected squared deviation from the mean
+## E(X) = x1*p(x1) + x2*p(x2) + ... + xn*p(xn)
 ## Var(X) = E((X - E(X))^2)
+
+## Y = (X - E(X))^2
+## Var(X) = E(Y)
+
 ## Let E(X) = mu
 ## Then:
 ## Var(X) = E((X - mu)^2)
@@ -265,7 +272,8 @@ possible_combinations <- combinations(length(e), 4, e, repeats.allowed=FALSE)
 ## convert to data.table form, because everything is better that way
 d <- as.data.table(possible_outcomes)
 
-## add a column to code for row index. This will come in handy if I want to perform row-wise computations
+## add a column to code for row index. This will come in handy if I want to
+## perform row-wise computations
 d[, row_ind := 1:.N]
 
 ## Now suppose that the products are alike in quality and that the consumers
@@ -273,7 +281,7 @@ d[, row_ind := 1:.N]
 ## events in the sample space are equally likely, and each has a probability of
 ## 1/16. Let a random variable be defined as:
 
-## X = number of persons preferring A to B
+## X = number of persons preferring A over B
 
 ## Add X to our data.table
 d[, X := sum(.SD == 'A'), .(row_ind)]
@@ -303,6 +311,17 @@ dd[X >= 2, sum(p)]
 
 ## Find p(1 <= X <= 3)
 dd[X >= 1 & X <= 3, sum(p)]
+
+## Find p(X < 2)
+dd[X<2, sum(p)]
+
+## Find p(X > 4)
+dd[X>4, sum(p)]
+
+## Find p(X <= 4)
+dd[X<=4, sum(p)]
+
+dd[X < 4]
 
 ## plot the probability distribution
 ## Note that when X is discrete, this is called the probability mass function
@@ -359,6 +378,8 @@ ggplot(dd, aes(x=X, y=p)) +
 ## (3) Trials are independent. The probability of success in a trial does not
 ## change given any amount of information about the outcomes of other trials.
 
+## For example: Coin toss
+
 ## As we will next, the Bernoulli distribution is a special case of the binomial
 ## distribution where a single experiment / trial is conducted (n=1).
 
@@ -367,13 +388,15 @@ ggplot(dd, aes(x=X, y=p)) +
 ## probability p and failure probability q in each trial. Further consider the
 ## random variable:
 
-## X = the sum of the number of Successes from the n Bernoulli trials
+## X = the sum of the number of Successes from n Bernoulli trials
 
 ## Then X is called a binomial distribution with n trials and success
 ## probability p. The binomial distribution is completely defined by two
 ## parameters, n and p, and we can write:
 
 ## X ~ Binomial(n,p)
+
+## ~ means "is distributed as"
 
 
 ## NOTE:
@@ -435,7 +458,6 @@ p4 <- d[X==4, .N * (p^4)]
 
 ## These should all look familiar:
 c(p0, p1, p2, p3, p4)
-dd
 
 ## Lets do this another way:
 d[, p := 0.5]
@@ -452,7 +474,7 @@ c(p0, p1, p2, p3, p4)
 
 ## Lets do it using a more generic method, so that it is easy to explore what
 ## happens when p != q
-d[, p := 0.9]
+d[, p := 0.1]
 d[, q := 1-p]
 d[, pX := .N * (p^(X) * q^(4-X)), .(X)]
 dd <- d[, unique(pX), .(X)]
@@ -469,6 +491,10 @@ ggplot(dd, aes(X, V1)) +
 ## NOTE: binomial distribution using R
 ## Lets consider an experiment in which we flip a coin n times, and count the
 ## number of heads observed. The coin may be biased or not.
+
+## X ~ binom(n,p)
+
+## n and p are parameters of the distribution
 
 ## To begin, lets explore n and p to the example above
 n <- 4
@@ -487,17 +513,20 @@ dd <- d[, .N, .(X)]
 dd[, p := N / d[, .N]]
 dd
 
+## lower.tail: logical; if TRUE (default), probabilities are P[X <= x],
+## otherwise, P[X > x].
+
 ## compute p(X > 3)
-pbinom(2, n, p, lower.tail=FALSE)
+pbinom(3, n, p, lower.tail=FALSE)
 
 ## Compute p(X >= 3):
-pbinom(1, n, p, lower.tail=FALSE)
+pbinom(2, n, p, lower.tail=FALSE)
 
 ## Compute p(X <= 3)
-pbinom(2, n, p, lower.tail=TRUE)
+pbinom(3, n, p, lower.tail=TRUE)
 
 ## Compute p(X <= 3) + p(X > 3)
-pbinom(2, n, p, lower.tail=TRUE) + pbinom(2, n, p, lower.tail=FALSE)
+pbinom(3, n, p, lower.tail=TRUE) + pbinom(3, n, p, lower.tail=FALSE)
 
 
 ## NOTE: plot binomial probability distribution
@@ -509,7 +538,7 @@ d <- data.table(x,y)
 ggplot(d, aes(x=x,y=y)) +
   geom_point() + # we use point because it's a discrete distribution
   geom_segment(aes(xend=x, yend=0)) +
-  xlab('X = number trials until first success') +
+  xlab('X = number successes in n Bernoulli trials') +
   ylab('Probability') +
   theme(aspect.ratio = 1)
 
