@@ -1,38 +1,12 @@
 library('data.table')
 library('ggplot2')
+library('gtools')
 
-## NOTE: 1
-## Each week a grocery shopper buys either canned (C) or bottled (B) soft
-## drinks. The type of soft drink purchased in 4 consecutive weeks is to be
-## recorded.
-
-## (a) List the sample space
-
-## (b) If a different type of soft drink is purchased than in the previous week,
-## we say there is a switch. Let,
-
-## X = number of switches
-
-## Determine the value of X for each elementary outcome (e.g, BBBB corresponds
-## to x=0; BCBC corresponds to x=3).
-
-## convert to data.table form, because everything is better that way.
-
-## (c) Suppose that for each purchase P(B)=0.5 and the decisions in different
-## weeks are independent. Assign probabilities to the elementary outcomes and
-## obtain the distribution of X.
-
-## Because each choice is independent, the probability of asequence of any four
-## choices being made is the same: 0.5*0.5*0.5*0.5
-
-## verify that p sums to 1
-
-## What unique outcomes does X have?
-
-## To get the distribution for X, we want to sum up the probability for each
-## unique outcome.
-
-## just for giggles, lets plot it
+## NOTE: Math-y thing you will need for this homework
+## Let Y ~ a*X + b
+## Then:
+## E(Y) = a*E(X) + E(b)
+## Var(Y) = (a^2)*E(X)
 
 ## NOTE: 2
 ## For the following probability distribution:
@@ -42,26 +16,9 @@ library('ggplot2')
 ## | f(x) | .1 | .3 | .3 | .2 | .1 |
 
 ## (a) Plot the distribution
-
 ## (b) Calculate E(X)
-## The least good method
-
-## Second least good
-
-## The best method
-
 ## (c) Find P(X>=4) and P(2<X<=4)
-
-## (d) Calculate E((2X-8)^2)
-## Let,
-## Y = (2X-8)^2
-## Y = (2X-8)*(2X-8)
-## Y = 4X^2 -32X + 64
-## TODO: How is this done from Ex? Doesn't the ^2 screw it up?
-## TODO: I suppose it's possible that the book meant (E(2X-8))^2
-## TODO: In any case, the difference could be useful to discuss.
-
-## (e) Let Y = (2X-8)^2
+## (d) Let Y = (2X-8)^2
 ## Obtain the distribution of Y and calculate E(Y)
 
 
@@ -72,15 +29,11 @@ library('ggplot2')
 ## |------+----+----+----+----|
 ## | f(x) | .3 | .4 | .2 | .1 |
 
-
 ## Find:
 
 ## (a) P(X>=2)
-
 ## (b) P(0<X<=2)
-
 ## (c) E(X)
-
 ## (d) Var(X); sd(X)
 
 
@@ -88,56 +41,98 @@ library('ggplot2')
 ## For scores X on a nationally administered aptitude test, the mean and variance are:
 ## E(X)=120
 ## Var(X)=100
+
 ## Find the mean and variance of:
-
-
 ## (a) Y = (X-120)/10
-
 ## (b) Y = (X-100)/20
 
 
-## NOTE: 5
-## In a study of the coexistence of two types of insect, let X and Y denote the
-## number of type A and B insects, respectively, that reside on the same plant.
-## From observations of a large number of of plants, suppose that the following
-## joint probability distribution is assessed for the insect counts per plant.
+## NOTE: 5 - Geometric distribution
+## The chance that monkeys will have a positive (successful) reaction during a
+## trial of an experiment is 1/3. Trials are performed until there is a success.
+## Define a random variable X:
 
-## | y\x |   1 |   2 |   3 |   4 |
-## |-----+-----+-----+-----+-----|
-## |   0 |   0 | .05 | .05 | .10 |
-## |   1 | .08 | .15 | .10 | .10 |
-## |   2 | .20 | .12 | .05 |   0 |
+## X = number of trials performed
+
+## What is the probability distribution of X?
+
+## Let S denote success and F denote failure
+## Then the sample space is:
+## S = {S, SF, SSF, SSSF, ...}
+
+## You can see that it's impossible to make a complete list of all the values
+## and their probabilities. However, this is a well studied problem, and it
+## turns out that there is an formula that will give p(x) for any x:
+## p(x) = (1/3)*(2/3)^(x-1)
+## Also, good ol' R has it built right in:
+## pgeom()
+## https://stat.ethz.ch/R-manual/R-devel/library/stats/html/Geometric.html
+## https://en.wikipedia.org/wiki/Geometric_distribution
+
+## The geometric distribution is defined by one parameter: The probability of
+## success. Let P(Success) = 1/3.
+
+## (a) Compute the following probabilities:
+## p(X = 3)
+## p(X > 3)
+## p(X >= 3)
+## p(X <= 3)
+## p(X <= 3) + p(X > 3)
+
+## (b) Plot geometric probability distribution for x = 0:10
+
+## (c) Draw a sample of size n= 1000 from the above geometric distribution and
+## plot it with a histogram
+
+## (d) Plot the geometric distribution for the following values of P(Success):
+## p(Success) = 0.2
+## p(Success) = 0.5
+## p(Success) = 0.8
+## Use facet_wrap to plot on a single figure.
+
+## (e) Compute the expected value of the geometric distributions that you
+## plotted in (d). For the geometric distribution, x can assume any value from
+## zero to infinity, but for now, assume x only ranges from 0 to 10. Add
+## vertical lines to indicate the population mean to each panel of the figure
+## you made in part (d).
+
+## (f) It turns out it can be proven that if X ~ geometric with probability of
+## success of p, then E(X) = (1-p)/p. How does this compare to the population
+## means you computed in (e)? Are they different, and if so, why?
+
+## (g) Plot samples from a geometric distribution for the following values of
+## P(Success):
+## p(Success) = 0.2
+## p(Success) = 0.5
+## p(Success) = 0.8
+## Use facet_wrap to plot on a single figure.
+
+## (h) For each panel in (f), draw a vertical line indicating the sample mean
+
+## (i) Repeat (g) and (h) a few times to see the variation in sample mean, and
+## the absence of variance in the population mean. Make a figure that shows the
+## results of each of these experiments in separate panel of one figure.
 
 
-## (a) Find the probability that there are more type B insects than type A
-## insects on a plant.
+## NOTE 6: A group of researchers is trying to determine the efficacy of an
+## anti-depressant. To do so, they run an experiment in which they administer
+## the anti-depressant to a series of rats until the first rat shows signs of
+## cheering up. Suppose that the 10th rat to receive the treatment showed signs
+## of reduced depression and the experiment was stopped.
 
-## (b) Compute E(X), E(Y), Var(X), Var(Y), and Cov(X,Y)
-
-## lets plot this to see if our answers make any sense
-
-## (c) Find the correlation coefficient between X and Y. Interpret the result.
-
-## (d) Let the total number of insects living on a plant be:
-## T = X + Y
-## Obtain the probability distribution of T and use it to calculate E(T) and Var(T)
-
-## (e) Verify:
-## (i) E(T) = E(X) + E(Y)
-## (ii) Var(T) = Var(X) + Var(Y) + 2cov(X,Y)
-
-## NOTE: 6
-## Consider the joint distribution
-
-## | x\y |  -1 |   0 |   1 |
-## |-----+-----+-----+-----|
-## |   0 |   0 | 1/3 |   0 |
-## |   1 | 1/3 |   0 | 1/3 |
+## (a) Use null hypothesis significance testing to test:
+## H0: p_success = 0.5
+## H1: p_success > 0.5
 
 
-## (a) Show that X and Y are not independent
+## NOTE: 7
+## Suppose we have a board game that depends on the roll of two die and attaches
+## special importance to rolling snake eyes (1, 1).
 
-## if X and Y are independent then P(x)==P(y) for all x and y.
-## This is clearly not true, so X and Y are not independent
+## In a particular game, the two die are rolled 200 times, and snake eyes comes
+## up 12 times. Is the proportion of snake eyes significantly higher than would
+## be expected by chance assuming the die are fair?
 
-## (b) Show that Corr(X,Y)=0
+## (a) answer this question without using the function binom.test()
+
+## (b) use binom.test() to answer this question.

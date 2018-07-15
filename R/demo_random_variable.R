@@ -775,9 +775,8 @@ ggplot(d, aes(x=x,y=y)) +
 n <- 1000
 sample <- rgeom(n, 1/3)
 d <- data.table(sample)
-b <- seq(0.1,10,1)
 ggplot(d, aes(sample)) +
-  geom_histogram(aes(y=..density..),breaks=b) +
+  geom_histogram(aes(y=..density..),bins=10) +
   theme(aspect.ratio = 1)
 
 ## Might out nicely here to use a bar graph (I'm guessing because I had to
@@ -794,9 +793,6 @@ dd[, x := as.integer(x)]
 ggplot(dd, aes(x=x, y=p_est)) +
   geom_bar(stat='identity') +
   theme(aspect.ratio = 1)
-
-## TODO: Use the last few plots to emphasize the difference between population
-## and sample.
 
 
 ## NOTE: plot different distributions for different parameter values

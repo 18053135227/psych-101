@@ -29,19 +29,22 @@ rm(list = ls())
 
 ## NOTE:
 ## define the parameters of X ~ Binom(n,p)
-p <- 0.5
 n <- 10
+p <- 0.5
 
 ## define function arguments common to all variants
 size <- n
 prob <- p
 
 ## define function arguments different between variants
-x <- 1:n
+x <- 0:n
 density <- dbinom(x, size, prob)
-probability <- pbinom(x, size, prob)
+probability <- pbinom(x, size, prob, lower.tail=FALSE)
+## lower.tail:
+## if TRUE, P[X <= x],
+## if FALSE, P[X > x].
 
-pp <- seq(0,1,.2)
+pp <- seq(0,1,.25)
 quantile <- qbinom(pp, size, prob)
 
 ## We want to examine most of these on a single figure, so construct a suitable
@@ -66,11 +69,10 @@ ggplot(d, aes(x, val)) +
 size <- n
 prob <- p
 n_sample <- 1000
-sample <- rbinom(n_sample, size, prob)
-d <- data.table(sample)
-ggplot(d, aes(sample)) +
-  geom_histogram()
-
+s <- rbinom(n_sample, size, prob)
+d <- data.table(s)
+ggplot(d, aes(s)) +
+  geom_histogram(bins=10)
 
 
 ## NOTE: Use these functions to compute the probabilities of X ~ Binom(n, p)
@@ -79,7 +81,8 @@ n <- 4
 p <- 0.5
 
 ## compute p(X=0), P(X=1), ..., P(X=5) using dbinom
-dbinom(0:n, n, p)
+x <- 0:n
+dbinom(x, n, p)
 
 ## compare to previous methods
 e <- c('H','T')
@@ -109,8 +112,9 @@ dd <- d[, unique(pX), .(X)]
 dbinom(0:n, n, p)
 
 ## NOTE: Compute cumulative probabilities
-## lower.tail: logical; if TRUE (default), probabilities are P[X <= x],
-## otherwise, P[X > x].
+## lower.tail:
+## if TRUE then P[X <= x]
+## if FALSE then P[X > x]
 
 ## set parameters n and p
 n <- 10
@@ -163,23 +167,23 @@ p_levels <- c(.1, .5, .9)
 n_rec <-  c()
 p_rec <- c()
 x_rec <- c()
-p_binom_rec <- c()
+d_binom_rec <- c()
 for(n in n_levels) {
   for(p in p_levels) {
     n_rec <- c(n_rec, rep(n, n+1))
     p_rec <- c(p_rec, rep(p, n+1))
     x_rec <- c(x_rec, 0:n)
-    p_binom_rec <- c(p_binom_rec, dbinom(0:n, n, p))
+    d_binom_rec <- c(d_binom_rec, dbinom(0:n, n, p))
   }
 }
 
-d <- data.table(n=n_rec, p=p_rec, x=x_rec, p_binom = p_binom_rec)
+d <- data.table(n=n_rec, p=p_rec, x=x_rec, d_binom = d_binom_rec)
 
 ## Add exp_val col to this data.table
-d[, exp_val := sum(x*p_binom), .(n,p)]
+d[, exp_val := sum(x*d_binom), .(n,p)]
 
 ## Plot the expected values to see if they seem plausible
-ggplot(d, aes(x=x, y=p_binom)) +
+ggplot(d, aes(x=x, y=d_binom)) +
   geom_point() +
   geom_segment(aes(xend=x, yend=0)) +
   xlab('X = number successes in n Bernoulli trials') +
@@ -196,11 +200,11 @@ ggplot(d, aes(x=x, y=p_binom)) +
 ## Var(X) = sum(x^2*p_x) - mu^2
 
 ## Add a var col to the data.table we just used in the previous section
-d[, pop_var := sum((x^2)*p_binom) - exp_val^2, .(n,p)]
+d[, pop_var := sum((x^2)*d_binom) - exp_val^2, .(n,p)]
 d[, pop_sd := sqrt(pop_var)]
 
 ## add +/- sd to the plot to check if plausible
-ggplot(d, aes(x=x, y=p_binom)) +
+ggplot(d, aes(x=x, y=d_binom)) +
   geom_point() +
   geom_segment(aes(xend=x, yend=0)) +
   xlab('X = number successes in n Bernoulli trials') +
@@ -227,7 +231,10 @@ ggplot(d, aes(x=x, y=p_binom)) +
 ## Since n=1, there are only possible outcomes: [0, 1]
 
 ## E(X) = 0*q + 1*p = p
-## Var(X) = 0^2*q + 1*^2*p - p^2 = p - p^2 = p*(1-p) = p*q
+## Var(X) = 0^2*q + 1*^2*p - p^2
+##        = p - p^2
+##        = p*(1-p)
+##        = p*q
 
 ## The trick now is to realize that for n > 1, we can simply think of the
 ## resulting binomial distribution as the sum of the n=1 binomial we just looked
@@ -331,6 +338,8 @@ p_estimate = exp_results / n
 
 ########################################
 ## Step 3: What is the probability of observing our data (or data more extreme)
+## assuming that the null hypothesis (H0) is true?
+## What is P(experiment results | H0 is TRUE)
 ########################################
 
 ## than what we observed) under the assumption that the null hypothesis (H0) is
@@ -345,7 +354,7 @@ p_H0 <- .5
 ## if FALSE: P[X > x].
 p_data_given_H0 <- pbinom(exp_results-1, n, p_H0, lower.tail=FALSE)
 
-## Q: What's up with the exp_results -1 in the first argument above?
+## Q: What's up with the exp_results-1 in the first argument above?
 ## A: ???
 
 ## In statistical hypothesis testing, the p-value or probability value or
@@ -430,7 +439,6 @@ ggplot(dd, aes(x,value)) +
 ## What are the consequences if you decide wrong? In psychology and many other
 ## fields, we are often willing to be wrong 5 times out of a 100. It is
 ## convention to call this rate alpha.
-
 alpha = 0.05
 
 ## Alpha goes by a couple names:
@@ -466,7 +474,7 @@ if(p_data_given_H0 < alpha) {
 ########################################
 
 ## NOTE: Of course, R will handle all this for you.
-binom.test(exp_results, n=n, p=p_H0, alternative='greater', conf.level=0.05)
+binom.test(exp_results, n=n, p=p_H0, alternative='greater', conf.level=0.95)
 
 ########################################
 
@@ -503,6 +511,9 @@ if(p_val < alpha) {
 } else {
   print('Failed to reject H0:')
 }
+
+## NOTE: do it all in one line with the magic of R
+binom.test(51,235,(1/6),alternative="greater", conf.level=0.95)
 
 
 ## NOTE: plot the null distribution (mass function) and shade the region
@@ -557,10 +568,6 @@ ggplot(d, aes(x,p)) +
   geom_segment(x=exp_results, xend=exp_results, y=0, yend=Inf, colour='red') +
   xlab('Number of successes in n Bernoulli trials') +
   theme(aspect.ratio = 1)
-
-
-## NOTE: do it all in one line with the magic of R
-binom.test(51,235,(1/6),alternative="greater", conf.level=0.95)
 
 
 ## NOTE: Types of Error
