@@ -1,0 +1,5 @@
+* loading the data for the final project and data file column names
+* list of questions / items that we will look for in the final project.
+* power functions / factors that influence power / r power package
+* power funcs needs careful dist of samp mean f(n) treatment
+* possibly leave this for HW or for another lecture

@@ -499,7 +499,7 @@ p_H0 <- 1/6
 ## X ~ binom(n, p)
 x <- 51
 
-## step 3: P(x|p_H0
+## step 3: P(x|p_H0)
 p_val <- pbinom(x-1, n, p_H0, lower.tail=FALSE)
 
 ## step 4: state our required confidence level
