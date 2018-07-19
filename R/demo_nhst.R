@@ -27,6 +27,7 @@ rm(list = ls())
 ## P(type I error) = alpha = total mass of H0 pmf in the rejection region
 ## Power = P(correctly rejecting H0) = total mass of H1 pmf in rejection region
 
+
 ## NOTE: Types of error example using Binomial RVs
 n <- 30
 p_H0 <- 0.4
@@ -158,8 +159,8 @@ ggplot(d, aes(x, fx)) +
 ## approximated by a Y ~ Normal(mu=n*p, sigma=n*p*(1-p))
 
 # p=.5 appears to be best case scenario... might be fun to fiddle with
-n <- 50
-p <- 0.5
+n <- 10
+p <- 0.25
 
 mu <- n*p
 sigma <- sqrt(n*p*(1-p))
@@ -180,9 +181,13 @@ ggplot(data=d) +
 
 
 ## NOTE: Compute and illustrate normal probabilities using the density function
+## Suppose X ~ N(0,1)
+mu <- 0.0
+sigma <- 1.0
+
 ## P(X <= 0)
 ## TODO: draw stuff on the board
-width <- 0.0001 # explore this value from small to large
+width <- 0.001 # explore this value from small to large
 x <- seq(-5, 0, width)
 height <- dnorm(x, mu, sigma)
 area <- width * height
@@ -241,7 +246,7 @@ ggplot(d, aes(x, y=fxd, ymin=0, ymax=fxd, fill=xreg)) +
 ## NOTE: P(0 < X <= 2)
 xsl <- 0
 xsu <- 2
-pnorm(xsl, mu, sigma, lower.tail=TRUE) - pnorm(xsu, mu, sigma, lower.tail=TRUE)
+pnorm(xsu, mu, sigma, lower.tail=TRUE) - pnorm(xsl, mu, sigma, lower.tail=TRUE)
 
 ## prepare for plotting by specifying regions under the PDF corresponding to p
 ## and 1-p
@@ -263,6 +268,8 @@ ggplot(d, aes(x, y=fxd)) +
 
 ## NOTE: Relevance to NHST:
 ## Recall that in NHST, we reject the Null Hypothesis if P(X < x) < alpha
+mu <- 0.0
+sigma <- 1.0
 alpha <- 0.05
 x_crit <- qnorm(alpha, mu, sigma, lower.tail=TRUE)
 
@@ -347,7 +354,7 @@ ggplot(data=d, aes(x=x)) +
 ## Our experiment results come from X
 n <- 100
 mu <- 10.0
-sigma <- 2.0
+sigma <- 25.0
 x <- rnorm(n, mu, sigma)
 
 ## Testing H about mu -> mu_est = sample mean
@@ -360,10 +367,10 @@ exp_rec <- c()
 rs_rec <- c()
 sm_rec <- c()
 for(i in 1:n_exp) {
-  samp <- rnorm(ns, mu, sigma)
-  exp_rec <- c(exp_rec, rep(i, ns))
+  samp <- rnorm(n, mu, sigma)
+  exp_rec <- c(exp_rec, rep(i, n))
   rs_rec <- c(rs_rec, samp)
-  sm_rec <- c(sm_rec, rep(mean(samp), ns))
+  sm_rec <- c(sm_rec, rep(mean(samp), n))
 }
 
 d <- data.table(exp = exp_rec, rs = rs_rec, sm = sm_rec)
@@ -380,7 +387,7 @@ ggplot(d, aes(rs)) +
 ## NOTE: To examine the distribution of our test statistic, we need to run the
 ## experiment a bunch of times, record the results each time, and plot a
 ## histogram of the test statistic.
-n_exp <- 100
+n_exp <- 1000
 sm_rec <- c()
 for(i in 1:n_exp) {
   x <- rnorm(n, mu, sigma)
@@ -488,12 +495,12 @@ ggplot(d, aes(rs)) +
 
 ## Next, try to estimate the distribution of sample means as a function of the
 ## number of samples we draw (i.e., the number of experiments).
-n_exp <- c(10, 25, 100)
+n_exp <- c(10, 25, 100, 1000)
 exp_rec <- c()
 sm_rec <- c()
 for(i in n_exp) {
   for(j in 1:i) {
-    samp <- runif(ns, lb, ub)
+    samp <- runif(ns, a, b)
     exp_rec <- c(exp_rec, i)
     sm_rec <- c(sm_rec, mean(samp))
   }
@@ -569,9 +576,9 @@ x <- runif(n, a, b)
 pop_var <- (1/12)*(b-a)^2
 
 ## step 1:
-## H0: mu = 10.0
-## H1: mu > 10.0
-mu_H0 <- 10.0
+## H0: mu = 20.0
+## H1: mu > 20.0
+mu_H0 <- 20.0
 
 ## step 2:
 ## mu_est = sample_mean ~ Normal(mu, sigma/n)
@@ -623,6 +630,7 @@ ggplot(dd, aes(x=x, y=value, colour=variable)) +
 alpha <- 0.05
 z_crit <- qnorm(alpha, 0, 1)
 t_crit <- qt(alpha, 10-1)
+
 
 ## TODO: Say something smart about this figure
 ggplot(data=d, aes(x=x)) +
