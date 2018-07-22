@@ -19,7 +19,7 @@ rm(list = ls())
 ## (3) THEN we have committed a (Type of Error)
 
 
-## NOTE: Review - Types of error and power with X ~ N(mu, sigma)
+# NOTE: Review - Types of error and power with X ~ N(mu, sigma)
 mu_H0 <- 0.0
 mu_H1 <- 3.0
 sigma <- 1.0
@@ -170,7 +170,7 @@ ggplot(dd, aes(x=x)) +
 ## NOTE: Review - Sampling Distribution
 
 ## Perform an experiment
-## Same thing as sample from a random variable X ~ Whatever(p1, p2, ..., pn)
+## Same thing as sample from a random variable X ~ Whatever(p1, p2, ..., p_whatever)
 ## Pick a sample size n (i.e, take n measurements)
 ## Results: {x1, x2, x3,..., xn}
 
@@ -185,9 +185,9 @@ ggplot(dd, aes(x=x)) +
 ## H1: mu_X > 50
 
 ## Then we use our sample (observed data) to estimate mu_X
-## mu_X_hat = mu_X_est = X_bar = x_obs = mean({x1, x2, x3, ..., xn})
+## mu_X_hat = mu_X_est = x_bar = x_obs = mean({x1, x2, x3, ..., xn})
 
-## In general, we reject H0 if P(x_obs | H0) < alpha
+## In general, we reject H0 if P(X_obs > x_obs | H0) < alpha
 
 ## Here is the key to the importance of the sampling distribution:
 ## x_obs isn't a sample from X ~ Whatever(p1, p2, ..., pn)
@@ -199,12 +199,12 @@ ggplot(dd, aes(x=x)) +
 
 ## We've just been lazy with how we've been writing it...
 
-## Q: What do we need to know in order to compute P(X_bar > x_obs | H0)?
+## Q: What do we need to know in order to compute P(X_obs > x_obs | H0)?
 ## A: We need to know the distribution of X_bar
 ## A: We need to know the distribution of sample means
 
 ## The central limit theorem tells us that (if n is large enough):
-## X_bar ~ N(mu_X, sigma_X/sqrt(X))
+## X_bar ~ N(mu_X, sigma_X/sqrt(n))
 
 ## Q: How large does n have to be?
 ## A: Good question...
@@ -233,7 +233,7 @@ x_crit <- qnorm(alpha, mu_x_H0, sigma_x, lower.tail=FALSE)
 ## compute power
 pnorm(x_crit, mu_x_obs_H1, sigma_x_obs, lower.tail=FALSE)
 
-## TODO:
+## TODO: Rats... didn't get to this.
 ## Notice that n descreases the variance of the sampling distribution, and this
 ## increases power.
 ## Q: What n do you need to for sure get power >= 0.8?
@@ -256,6 +256,7 @@ x <- runif(n, a, b)
 pop_var <- (1/12)*(b-a)^2
 pop_sd <- sqrt(pop_var)
 
+
 ## NOTE: Test H1 greater than
 ## step 1:
 ## H0: mu = 25.0
@@ -268,7 +269,7 @@ alpha <- 0.05
 ## step 3:
 x_obs <- mean(x)
 
-## step 4: compute P(x_obs|p_H0)
+## step 4: compute P(X_obs > x_obs | p_H0)
 mu_x_obs_H0 <- mu_x_H0
 
 n <- length(x)
@@ -278,7 +279,7 @@ pH0 <- pnorm(x_obs, mu_x_H0, sigma_x_obs, lower.tail=FALSE)
 x_crit <- qnorm(alpha, mu_x_H0, sigma_x_obs, lower.tail=FALSE)
 
 ## step 5:
-## Reject H0 if P(X < x_obs | H0 is true) < alpha
+## Reject H0 if P(X_obs < x_obs | H0 is true) < alpha
 pH0 < alpha
 x_obs > x_crit
 
@@ -316,7 +317,6 @@ mu_x_obs_H0 <- mu_x_H0
 n <- length(x)
 sigma_x_obs <- pop_sd / sqrt(n)
 
-## TODO: Ask GSIs et al. about lower.tail here...
 pH0 <- pnorm(x_obs, mu_x_H0, sigma_x_obs, lower.tail=TRUE)
 x_crit <- qnorm(alpha, mu_x_H0, sigma_x_obs, lower.tail=TRUE)
 
@@ -423,12 +423,12 @@ ggplot(d, aes(x, fxd)) +
 ## Student's t-distribution has one parameter called the "degrees of freedom"
 ## df = n-1
 x <-  seq(-3,3,.01)
-pdf_t10 <- dt(x, 5)
-pdf_t50 <- dt(x, 10)
-pdf_t100 <- dt(x, 20)
+pdf_t5 <- dt(x, 5)
+pdf_t10 <- dt(x, 10)
+pdf_t20 <- dt(x, 20)
 pdf_N <- dnorm(x, 0, 1)
 
-d <- data.table(x, pdf_t10, pdf_t50, pdf_t100, pdf_N)
+d <- data.table(x, pdf_t5, pdf_t10, pdf_t20, pdf_N)
 dd <- melt(d, id.vars="x")
 
 ## t-distribution looks very normal, but with heavy tails
@@ -463,6 +463,8 @@ ggplot(data=d, aes(x=x)) +
 ## Luckily, it's easy to "standardize" observations from random variables.
 
 ## Suppose you run an experiment and the results are:
+rm(list=ls())
+
 n <- 100
 a <- 0.0
 b <- 50.0
@@ -473,6 +475,8 @@ x <- runif(n, a, b)
 ## H1: mu > 15.0
 mu_H0 <- 15.0
 
+alpha <- 0.05
+
 ## step 2:
 ## mu_est = sample_mean ~ Normal(mu, sigma/n)
 x_obs <- mean(x)
@@ -481,9 +485,6 @@ x_obs <- mean(x)
 sigma_X_est <- sd(x)
 sigma_Xbar_est <- sigma_X_est / sqrt(n)
 
-## TODO: show how the above transformation works
-## TODO: it's a lot like the homework!
-
 ## standardize x_obs
 t_obs <- (x_obs - mu_H0) / sigma_Xbar_est
 
@@ -491,7 +492,6 @@ df <- n-1
 pH0 <- pt(t_obs, df, lower.tail=FALSE)
 t_crit <- qt(alpha, df, lower.tail=FALSE)
 
-alpha <- 0.05
 pH0 < alpha
 
 
@@ -506,7 +506,8 @@ d <- data.table(t,ft)
 
 ggplot(d, aes(x=t, y=ft)) +
   geom_line() +
-  geom_vline(xintercept=t_crit, colour='red', linetype=3)
+  geom_vline(xintercept=t_crit, colour='red', linetype=3) +
+  geom_vline(xintercept=t_obs, colour='blue', linetype=3)
 
 
 ## NOTE: t-tests on real world data (flights?)
