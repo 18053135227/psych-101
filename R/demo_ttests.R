@@ -5,8 +5,15 @@ library('gtools')
 rm(list = ls())
 
 ## read some cool data
+## f <- '~/Downloads/switch_data.csv'
 f <- '../data/switch_cat_learn/switch_data.csv'
+
+## If I were on a PC:
+## f <- 'C:/users/username/downloads/switch_data.csv'
+
 d <- fread(f)
+
+d <- as.data.table(d)
 
 ## there's a bit going on here... lets break it down
 d[, unique(subject)]
@@ -17,6 +24,7 @@ d[, unique(cue)]
 ## Plot it
 dd <- d[, .(mean(acc), sd(acc)/sqrt(.N)), .(condition, phase, block, cue)]
 setnames(dd, c('V1','V2'), c('acc_mean', 'acc_err'))
+
 ggplot() +
   geom_line(data=dd[phase==1], aes(x=block, y=acc_mean, colour=factor(cue))) +
   geom_errorbar(data=dd[phase==1],
@@ -70,14 +78,16 @@ ns*nt == n
 
 ## Back to the test
 pH0 <- .5
+alpha <- 0.05
 x_obs <- sum(x)
-binom.test(x_obs, n, pH0, alternative='greater', conf.level=.95)
+binom.test(x_obs, n, pH0, alternative='greater', conf.level=1-alpha)
 
 
 ## Option 2:
 ## X = mean accuracy on a block of trials
 ## X ~ Normal(mu, sigma)
 ## X_obs ~ Normal(mu, sigma/sqrt(n))
+
 ## In this case, each block of phase 1 from each subject is one sample from X
 x <- d[condition==1 & phase==1, mean(acc), .(block, subject)][, V1]
 n <- length(x)
@@ -94,7 +104,8 @@ ns*nb == n
 
 ## Back to the test
 muH0 <- .5
-t.test(x, mu=muH0, alternative='greater', conf.level=.95)
+alpha <- 0.05
+t.test(x, mu=muH0, alternative='greater', conf.level=1-alpha)
 
 
 ## NOTE: Comparing two treatments --- Independent samples
@@ -107,6 +118,7 @@ t.test(x, mu=muH0, alternative='greater', conf.level=.95)
 
 ## Condition 1 and Condition 2 contain different subjects.
 ## That is, Condition is a "between-subjects" factor.
+
 ## This allows us to safely assume X and Y are independent.
 
 ## Step 1:
@@ -171,6 +183,7 @@ n_exps <- 1000
 sd_biased_rec <- c()
 sd_unbiased_rec <- c()
 n_rec <- c()
+
 for(n in n_samples) {
   for(i in 1:n_exps) {
     ## draw a random sample of size n from N(mu, sigma)
@@ -236,7 +249,7 @@ ggplot(dd, aes(value, fill=variable)) +
 ## In this particular scenario, we want an estimate for mu_diff = muX - muY:
 ## Call our estimator mu_diff_hat.
 ## Then we want,
-## E[mu_diff_hat] = muX - muY
+## E[mu_diff_hat] = mu_diff = muX - muY
 
 ## Intuition suggests that the following might be good:
 
@@ -297,11 +310,11 @@ alpha  <- 0.05
 ## Recall that we use z_bar to estimate muX - muY, and z_bar = x_bar - y_bar
 
 ## get samples from X ~ condition 1
-x <- d[condition==1 & block==1, mean(acc), .(block, subject)][, V1]
+x <- d[condition==1 & phase==1, mean(acc), .(phase, subject)][, V1]
 nx <- length(x)
 
 ## get samples from Y ~ condition 2
-y <- d[condition==1 & block==2, mean(acc), .(block, subject)][, V1]
+y <- d[condition==2 & phase==1, mean(acc), .(phase, subject)][, V1]
 ny <- length(y)
 
 ## get sample from X_bar, Y_bar, and Z_bar
@@ -310,7 +323,7 @@ y_bar_obs <- mean(y)
 z_bar_obs <- x_bar_obs - y_bar_obs
 
 var_z_bar_obs <- var(x)/nx + var(y)/ny
-sigma_z_bar_obs <- sqrt(var_Z_bar_obs)
+sigma_z_bar_obs <- sqrt(var_z_bar_obs)
 
 ## Because we are estimating the population standard deviation of Z_bar with the
 ## sample standard deviation, we end up with a t-distribution instead of
@@ -469,13 +482,15 @@ t_crit_lower <- qt(alpha/2, df, lower.tail=TRUE)
 t_crit_upper <- qt(alpha/2, df, lower.tail=FALSE)
 
 ## Step 5:
-if(p_obs_less < alpha/2 | p_obs_greater < alpha/2) {
+## TODO: YUCK BUG!!
+## NOTE: I Fixed it!
+if(p_obs_lower < alpha/2 | p_obs_upper < alpha/2) {
   print('Reject H0')
 } else {
   print('Fail to reject H0')
 }
 
-if(t_obs > t_crit_greater | t_obs < t_crit_less) {
+if(t_obs > t_crit_upper| t_obs < t_crit_lower) {
   print('Reject H0')
 } else {
   print('Fail to reject H0')
@@ -559,6 +574,3 @@ d <- data.table(df=df_rec, t=t_rec, ft=ft_rec)
 ## reject the null.
 ggplot(d, aes(t, ft, colour=as.factor(df))) +
   geom_line()
-
-
-## TODO: If time permits, pull remaining bits from last lecture
