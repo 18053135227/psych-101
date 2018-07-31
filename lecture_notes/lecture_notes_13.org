@@ -1,0 +1,3 @@
+* Review
+* Comparing the variance of two Normals
+* One-way ANOVA

@@ -5,6 +5,9 @@ rm(list = ls())
 f <- '../data/switch_cat_learn/switch_data.csv'
 d <- fread(f)
 
+## If d is a data.frame for whatever reason, then do this:
+## d <- as.data.table(d)
+
 ## NOTE: Plot it
 dd <- d[, .(mean(acc), sd(acc)/sqrt(.N)), .(condition, phase, block, cue)]
 setnames(dd, c('V1','V2'), c('acc_mean', 'acc_err'))
@@ -72,6 +75,11 @@ mu_z_bar_null <- 0
 alpha  <- 0.05
 
 ## Step 3:
+## X ~ N(muX, sigmaX)
+## Y ~ N(muY, sigmaY)
+## where a single (n=1) sample from X or Y corresponds to the meann accuracy
+## from a single subject, in a single phase.
+
 ## Get observations from X and Y
 x <- d[condition==1 & phase==1, mean(acc), .(phase, subject)][, V1]
 y <- d[condition==2 & phase==1, mean(acc), .(phase, subject)][, V1]
@@ -88,19 +96,19 @@ var_z_bar_obs <- var(x)/nx + var(y)/ny
 sigma_z_bar_obs <- sqrt(var_z_bar_obs)
 
 ## Step 4:
-df = ((sd(x)^2)/nx + (sd(y)^2)/ny)^2 /
-    ((1/(nx-1))*((sd(x)^2)/nx)^2 + (1/(ny-1))*((sd(y)^2)/ny)^2)
-
 t_obs <- (z_bar_obs - mu_z_bar_null) / sigma_z_bar_obs
 
 ## TODO: Draw on the board to illustrate what's going on with the p-value
+df = ((sd(x)^2)/nx + (sd(y)^2)/ny)^2 /
+  ((1/(nx-1))*((sd(x)^2)/nx)^2 + (1/(ny-1))*((sd(y)^2)/ny)^2)
+
 p_obs_lower <- pt(-abs(t_obs), df, lower.tail = TRUE)
 p_obs_upper <- pt(abs(t_obs), df, lower.tail = FALSE)
 t_crit_lower <- qt(alpha/2, df, lower.tail = TRUE)
 t_crit_upper <- qt(alpha/2, df, lower.tail = FALSE)
 
 ## Step 5:
-if(p_obs_less < alpha/2 | p_obs_greater < alpha/2) {
+if(p_obs_lower < alpha/2 | p_obs_upper < alpha/2) {
     print('Reject H0')
 } else {
     print('Fail to reject H0')
@@ -116,7 +124,7 @@ if(t_obs > t_crit_upper| t_obs < t_crit_lower) {
 t.test(x,
        y,
        alternative='two.sided',
-       mu=mu_Z_bar_null,
+       mu=mu_z_bar_null,
        paired=FALSE,
        var.equal=FALSE,
        conf.level=.95)
@@ -126,7 +134,7 @@ t.test(x,
 tresult <- t.test(x,
                   y,
                   alternative='two.sided',
-                  mu=mu_Z_bar_null,
+                  mu=mu_z_bar_null,
                   paired=FALSE,
                   var.equal=FALSE,
                   conf.level=.95)
@@ -137,7 +145,6 @@ tresult['statistic']
 tresult$statistic
 tresult['p.value']
 tresult$p.value
-
 
 
 ## NOTE: Paired samples
@@ -221,6 +228,7 @@ t.test(x=d_obs,
 rm(list = ls())
 
 dir_data_delay = '../final_project/data/delay/'
+
 files_delay <- list.files(dir_data_delay)
 
 d_rec <- list()
@@ -294,7 +302,7 @@ alpha <- .05
 
 ## Estimate the population parameter mu
 x <- d[, mean(acc[1:20]), .(fname)][, V1]
-## x <- x[!is.na(x)] ## NOTE: an alternative to na.rm = TRUE
+x <- x[!is.na(x)] ## NOTE: an alternative to na.rm = TRUE
 x_obs <- mean(x, na.rm=TRUE)
 n <- length(x)
 df <- n - 1
@@ -336,7 +344,7 @@ t_obs <- (x_obs - mu_x_H0) / sig_x_obs
 
 ## 4.
 df <- n-1
-p_H0 <- pt(t_obs, df, lower.tail=TRUE)
+p_obs <- pt(t_obs, df, lower.tail=TRUE)
 t_crit <- qt(alpha, df, lower.tail=TRUE)
 
 ## 5.

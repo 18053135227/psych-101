@@ -77,7 +77,7 @@ ggplot(dd, aes(x=x, y=value, colour=variable)) +
 ## Chisq(df) = (n-1) * sample_variance(x) / population_variance(X)
 ## df=n-1
 ## Becomes this:
-## chisq_obs = (n-1) * sd(x) / varxH0
+## chisq_obs = (n-1) * var(x) / varxH0
 ## df=n-1
 
 ## E.g.,

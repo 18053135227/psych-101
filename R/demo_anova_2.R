@@ -3,13 +3,12 @@ library('ggplot2')
 
 rm(list = ls())
 
-
 ## NOTE: One-way ANOVA
 ## Suppose ou have k different treatment groups. A one-way ANOVA asks if there
 ## are any differences in the effects of treatment between any of the goups.
 ## This type of test is called an "omnibus" test.
 
-## The hypotheses look like this:
+## The H's look like this:
 ## H0: mu1 = mu2 = mu3 ...
 ## H1: not H1
 
@@ -43,6 +42,37 @@ rm(list = ls())
 ##   defined by the factor levels
 ## - The data of each factor level are normally distributed.
 ## - These normal populations have a common variance.
+
+
+## NOTE: A slightly more math-y example
+## | Treatment 1 | Treatment 2 | Treatment 3 |
+## |-------------+-------------+-------------|
+## | x1          | y1          | z1          |
+## | x2          | y2          | z2          |
+## | ...         | ...         | ...         |
+## | xn          | yn          | zn          |
+## |-------------+-------------+-------------|
+## |             |             |             |
+
+## between_group_variation: (x_bar - grand_mean)^2 + (y_bar - grand_mean)^2 + (z_bar - grand_mean)^2
+## within_group_variation: sum((x-x_mean)^2) + sum((y-y_mean)^2) + sum((z-z_mean)^2)
+
+## Step 3: specify the distribution of a statistic that estimates the population
+##         parameter in step 1 and compute it's value from your x observations
+##         (for now, call the result x_H_obs).
+## X ~ how do you think X is distributed?
+## X_H_obs = what statistic will you use to estimate the parameters in H0?
+## X_H_obs ~ how do you think X_H_obs is distributed?
+
+## X (or X, Y, and Z, if you like) ~ Normal(mu, sigma)
+## X_H_obs = between_group_variation / within_group_variation
+## X_H_obs ~ F(df_top, df_bottom)
+
+## This is all pretty much correct. It would be exactly correct if we really
+## carefully factored in the fact that we don't have a ration of variances,
+## exactly. We have a ratio of a sum of variances. This will get factored in (1)
+## via the degrees of freedom and (2) by using "MSE" instead of "SSE" in the
+## ratio.
 
 
 ## NOTE: Try out an example
@@ -97,9 +127,3 @@ anova(fm)
 ## Take-home message: When the data are balanced, don't worry.
 ## If the data are unbalanced, then go with this:
 options(contrasts = c(“contr.sum”,”contr.poly”))
-
-
-## TODO: If time permits, then do some real data examples of each of the F-tests
-## we just looked at. This will be real-time coding... which might be cool for
-## the class to see.
-

@@ -7,3 +7,4 @@
 * Does the class value the real data examples as much as I do?
 * Get real data examples for other experiment paradigms
 - possible issue here is that this approach will eat up major time
+* insist on github
