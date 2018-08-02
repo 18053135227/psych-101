@@ -55,6 +55,7 @@ rm(list = ls())
 ## |             |             |             |
 
 ## between_group_variation: (x_bar - grand_mean)^2 + (y_bar - grand_mean)^2 + (z_bar - grand_mean)^2
+
 ## within_group_variation: sum((x-x_mean)^2) + sum((y-y_mean)^2) + sum((z-z_mean)^2)
 
 ## Step 3: specify the distribution of a statistic that estimates the population
