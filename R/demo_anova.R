@@ -147,13 +147,13 @@ sigmaY <- sqrt(varY)
 y <- rnorm(n, muX, sigmaY)
 
 ## 1. state H's
-## H0: sigmaX = sigmaY
-## H1: sigmaX < sigmaY
+## H0: sigmasqX = sigmasqY
+## H1: sigmasqX < sigmasqY
 
 ## TODO: comment on the strangeness of this approach... however, it is
 ## nevertheless THE approach.
-## H0: sigmaX/sigmaY = 1
-## H1: sigmaX/sigmaY < 1
+## H0: sigmasqX/sigmasqY = 1
+## H1: sigmasqX/sigmasqY < 1
 var_ratio_H0 <- 1
 
 ## 2. choose confidence
@@ -254,13 +254,22 @@ alpha <- 0.05
 
 ## 3. choose a statistic to estimate the parameter in H0 and determine its
 ## sampling distribution.
+
+## Our original data come from (like asking you all questions in class):
+## X ~ N(muX, sigmaX)
+## Y ~ N(muY, sigmaY)
+## X and Y independent
+
+## To use nomenclature from last lecture:
+## X_H_obs = var(x) / var(y) ~ F(dfx, dfy) = f(nx-1, ny-1)
+
 dfx <- n - 1
 dfy <- n - 1
 f_obs = var(x) / var(y)
 
 ## 4. compute p- and critical- values
-p_obs <- pf(F_obs, dfx, dfy, lower.tail = FALSE)
-f_crit <- qf(alpha, dfx, dfy, lower.tail = FALSE)
+p_obs <- pf(f_obs, dfx, dfy, lower.tail = TRUE)
+f_crit <- qf(alpha, dfx, dfy, lower.tail = TRUE)
 
 ## 5. Make a decision
 if(p_obs < alpha) {
@@ -269,7 +278,7 @@ if(p_obs < alpha) {
   print('fail to reject H0')
 }
 
-if(f_obs > f_crit) {
+if(f_obs < f_crit) {
   print('reject H0')
 } else {
   print('fail to reject H0')
@@ -281,8 +290,7 @@ if(f_obs > f_crit) {
 ##          y,
 ##          ratio = 1,
 ##          alternative = c("two.sided", "less", "greater"),...)
-var.test(x, y, ratio = 1, alternative = 'greater')
-
+var.test(x, y, ratio = 1, alternative = 'less')
 
 ## TODO: If time permits, then do some real data examples of each of the F-tests
 ## we just looked at. This will be real-time coding... which might be cool for

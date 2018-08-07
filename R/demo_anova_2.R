@@ -10,7 +10,7 @@ rm(list = ls())
 
 ## The H's look like this:
 ## H0: mu1 = mu2 = mu3 ...
-## H1: not H1
+## H1: not H0
 
 
 ## NOTE: Intuitive explanation for how a one-way ANOVA works
@@ -57,6 +57,7 @@ rm(list = ls())
 ## between_group_variation: (x_bar - grand_mean)^2 + (y_bar - grand_mean)^2 + (z_bar - grand_mean)^2
 
 ## within_group_variation: sum((x-x_mean)^2) + sum((y-y_mean)^2) + sum((z-z_mean)^2)
+
 
 ## Step 3: specify the distribution of a statistic that estimates the population
 ##         parameter in step 1 and compute it's value from your x observations
@@ -115,6 +116,7 @@ d[, mse_within := ss_within / df_within]
 
 
 ## Step 7: Calculate the F-ratio
+d[, F := mse_between / mse_within]
 d[, F := (ss_between/df_between) / (ss_within/df_within)]
 
 
@@ -127,4 +129,4 @@ anova(fm)
 ## https://www.r-bloggers.com/anova-%E2%80%93-type-iiiiii-ss-explained/
 ## Take-home message: When the data are balanced, don't worry.
 ## If the data are unbalanced, then go with this:
-options(contrasts = c(“contr.sum”,”contr.poly”))
+options(contrasts = c("contr.sum","contr.poly"))

@@ -2,9 +2,9 @@ library('data.table')
 library('ggplot2')
 
 
-## NOTE: Analyze rbbsdelay.csv
 rm(list = ls())
 
+## NOTE: Analyze rbbsdelay.csv
 ## load the data
 d <- fread('../data/rbbsdelay/rbbsdelay.csv')
 
@@ -43,10 +43,10 @@ ggsave('../figures/test_fig.pdf', width=5, height=5)
 fm <- lm(acc ~ condition, data=ddd)
 anova(fm)
 
+
 x <- ddd[condition=='delay', acc]
 y <- ddd[condition=='immed', acc]
 z <- ddd[condition=='short', acc]
-
 t.test(x, y)
 t.test(x, z)
 t.test(y, z)
@@ -54,6 +54,7 @@ t.test(y, z)
 ## TODO:
 ## Q: Why use ANOVA to assess differences between multiple treatments /
 ## conditions / whatever when you could just use multiple t-tests?
+## A: multiple comparisons, bro. Look it up.
 
 
 ## NOTE: Are there any differences between any of the conditions across any
