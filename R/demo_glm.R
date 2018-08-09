@@ -56,6 +56,7 @@ d <- fread('../data/rbbsdelay/rbbsdelay.csv')
 ## TODO: good opportunity to dicuss checking results for plausibility
 d[, condition := factor(condition)]
 d[, block := factor(block)]
+d[, condition := as.character(condition)]
 d[, block := as.character(block)]
 
 fm <- lm(acc_mean ~ condition*block, data=d)
@@ -116,9 +117,6 @@ anova(fm)
 summary(fm)
 
 
-
-
-
 ## NOTE: Simple linear Regression compared to one-way ANOVA
 ## | Simple Linear Regression                         | One-Way ANOVA                                        |
 ## |--------------------------------------------------+------------------------------------------------------|
@@ -145,7 +143,18 @@ y <- d[block==17, acc_mean]
 fm <- lm(y ~ x)
 anova(fm)
 summary(fm)
+
 ## TODO: plot x vs y with regression line
+dd <- data.table(x,y)
+ggplot(dd, aes(x,y)) +
+  geom_point() +
+  theme(aspect.ratio = 1) +
+  xlab('Block 16 Accuracy') +
+  ylab('Block 17 Accuracy') +
+  ## geom_smooth(method='lm')
+  geom_abline(intercept=fm$coefficients[1], slope=fm$coefficients[2], colour='red')
+
+
 
 
 ## NOTE: Relationship between model parameters, F-score, p-value, etc.
@@ -229,3 +238,4 @@ p.F <- pf(F, df.model, df.residual)
 
 ## TODO: repeated measures ANOVA
 ## TODO: confidence intervals
+## TODO: effect size
